@@ -1,0 +1,54 @@
+.formInput
+  label Nom de l'évènement
+  -if(errors.name)
+    .validationError= errors.name.message
+  input(type='text', name='name', value='#{params.name ? params.name : ""}')
+
+.formInput(class=['dateSelector'])
+  label Date de lancement
+  -if(errors.beginning)
+    .validationError= errors.beginning.message
+  select.dayDate(name='day_beginning')
+    -if(params.beginning)
+      option(value="#{params.beginning.getDate()}")
+  select.monthDate(name='month_beginning')
+    -if(params.beginning)
+      option(value="#{params.beginning.getMonth() + 1}")
+  select.hourDate(name='hour_beginning')
+    -if(params.beginning)
+      option(value="#{params.beginning.getHours()}")
+.formInput(class=['dateSelector'])
+  label Date de fin
+  -if(errors.ending)
+    .validationError= errors.ending.message
+  input(type='checkbox', class=['triggerInput'], trigger-target='dateEnding', name='option_ending', checked=params.ending == undefined ? false : true)
+  select.dayDate(name='day_ending', trigger-name='dateEnding')
+    -if(params.ending)
+      option(value="#{params.ending.getDate()}")
+  select.monthDate(name='month_ending', trigger-name='dateEnding')
+    -if(params.ending)
+      option(value="#{params.ending.getMonth() + 1}")
+  select.hourDate(name='hour_ending', trigger-name='dateEnding')
+    -if(params.ending)
+      option(value="#{params.ending.getHours()}")
+
+.formInput
+  label Nombre de joueur max
+  -if(errors.maxPlayers)
+    .validationError= errors.maxPlayers.message
+  input(type='checkbox', class=['triggerInput'], trigger-target='maxPlayers', name='option_maxPlayers', checked=params.maxPlayers == undefined ? false : true)
+  input(type='number', min='0', value="#{params.maxPlayers ? params.maxPlayers : 100}", trigger-name='maxPlayers', name='maxPlayers')
+
+.formInput
+  label Niveau minimum requis 
+  -if(errors.minLevel)
+    .validationError= errors.minLevel.message
+  input(type='checkbox', class=['triggerInput'], trigger-target='minLevel', name='optionMinLevel', checked=params.minLevel == undefined ? false : true)
+  input(type='number', min='0', max='100', value="#{params.minLevel ? params.minLevel : 1}", trigger-name='minLevel', name='minLevel')
+
+.formInput
+  label Niveau maximum requis
+  -if(errors.maxLevel)
+    .validationError= errors.maxLevel.message
+  input(type='checkbox', class=['triggerInput'], trigger-target='maxLevel', name='optionMaxLevel', checked=params.maxLevel == undefined ? false : true)
+  input(type='number', min='0', max='100', value="#{params.maxLevel ? params.maxLevel : 100}", trigger-name='maxLevel', name='maxLevel')

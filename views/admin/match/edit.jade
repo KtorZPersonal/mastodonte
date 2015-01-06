@@ -1,0 +1,19 @@
+extends ../layout
+block messages
+block content
+  h1 Administration
+  h2 Édition d'un événement 
+    span Mastodon
+
+  form(method='post', action='/admin/match/#{params.id}/edit')
+    include ./_matchForm
+    .formInput
+      input(type='submit', value='Modifier un événement')
+
+  a(href='/admin/match/#{params.id}/show') Retour
+
+block scripts
+  script(src='/dateSelector.js')
+  script(src='/triggerInput.js')
+
+

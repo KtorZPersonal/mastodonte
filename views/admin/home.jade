@@ -1,0 +1,14 @@
+extends ./layout
+block content
+  h1 Administration
+
+  -if(matches.length == 0){
+      = 'Aucun événement en cours'
+      br
+  -}else{
+    each match in matches
+      .match: a(href='/admin/match/#{match._id}/show')= match.name
+  -}
+  
+  br
+  a(href='admin/match/new') Créer un nouvel évènement

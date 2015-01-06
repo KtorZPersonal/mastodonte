@@ -1,0 +1,18 @@
+extends ../layout
+block content
+  h1 Administration
+  h2 Création d'un événement 
+    span Mastodon
+
+  form(method='post', action='new')
+    include ./_matchForm
+    .formInput
+      input(type='submit', value='Créer un événement')
+
+  a(href='/admin') Retour
+
+block scripts
+  script(src='/dateSelector.js')
+  script(src='/triggerInput.js')
+
+

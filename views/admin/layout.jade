@@ -1,0 +1,16 @@
+doctype html
+html(lang="fr")
+  head
+    meta(charset="utf-8")
+    title Mastodonte - Administration
+  body
+    block messages
+      -if(messages && messages.info.length > 0)
+        .message(class=['info'])= '/!\\ ' + messages.info[0]
+
+      -if(messages && messages.alert.length > 0)
+        .message(class=['alert'])= '(-) ' + messages.alert[0]
+
+    block content
+    script(src='/jquery-1.11.2.min.js')
+    block scripts
