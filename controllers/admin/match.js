@@ -7,7 +7,7 @@ var th = require('../../helpers/textHandler');
 
 /* Display form to create a new match */
 router.get('/new', function(req, res){
-  res.render('admin/match/new', validationsHelper.locals(req, ['beginning', 'ending']));
+  res.render('admin/match/new', validationsHelper.locals(req));
 });
 
 /* Handle the post for creating a new match */
@@ -31,7 +31,7 @@ router.get('/:id/edit', function(req, res){
   /* Two cases : coming from normal get, and coming from redirection after bad update */
   if(req.session.params) {
     /* Update try */
-    res.render('admin/match/edit', validationsHelper.locals(req, ['beginning', 'ending']));
+    res.render('admin/match/edit', validationsHelper.locals(req));
   } else {
     /* Find the match first */
     Match.find(req.params.id, function(err, match){
@@ -97,19 +97,22 @@ router.post('/:id/delete', function(req, res){
 /* A global handler for interactions with the model */
 var modelResponseHandler = function(err, req, res, messages, destinations, match){
   var situation = 'success';
-  if(err && err.name == 'ModelError') {
-    if(err.type == 'VALIDATION') {
+  if (err && err.name == 'ModelError') {
+    if (err.type == 'VALIDATION') {
       /* Validation Error, let's display the pre-filled form again 
       So, previous parameters have to be communicated */
       req.session.validationErrors = err.errors;
-      req.session.params = req.body;
+
+      req.session.params = {};
+      for (var param in req.body) {
+        /* Special handle for date, we want to keep the method after the session */
+        req.session.params[param] = (req.body[param] instanceof Date) 
+          ? {datetype: true, timestamp: req.body[param].getTime()}
+          : req.session.params[param] = req.body[param]; 
+      }
 
       /* Add also param in querystring */
       for(p in req.params) req.session.params[p] = req.params[p];
-
-      /* Special handle for date, we want to keep the method after the session */
-      if(req.body.beginning) req.session.params.beginning = req.body.beginning.getTime();
-      if(req.body.ending) req.session.params.ending = req.body.ending.getTime();
     }
     /* With a little alert message to inform the user he fucked up */
     req.flash('alert', messages.alert);
@@ -125,7 +128,7 @@ var modelResponseHandler = function(err, req, res, messages, destinations, match
   if(destinations[situation].style == 'redirect') {
     res.redirect(destinations[situation].path);
   } else {
-    var locals = validationsHelper.locals(req, ['beginning', 'ending']);
+    var locals = validationsHelper.locals(req);
     if(situation == 'success' && match) locals.params = match;
     res.render(destinations[situation].path, locals);
   }

@@ -71,8 +71,6 @@ var update = function(id, params, callback){
         match[path] = params[path];
       }
     });
-
-    console.log(match);
     
     match.save(function(err){
       requiredErrorHelper(err, th.FR.MODELS.MATCH.FIELDS, function(err){

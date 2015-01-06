@@ -17,6 +17,6 @@
     "cheerio": "~0.18.0",
     "mongoose-auto-increment": "~3.2.0",
     "express-session": "~1.9.3",
-    "express-session": "~0.1.1"
+    "express-flash": "~0.1.1"
   }
 }
