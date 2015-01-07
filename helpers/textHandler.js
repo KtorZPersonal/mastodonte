@@ -4,7 +4,8 @@ var languages = {
       UNKNOWN: "Une erreur inconnue est survenue.",
       INVALID_PARAM: "L'un des paramètres fournis est invalide.",
       ENTITY_NOT_FOUND: "@entity recherché(e) n'existe pas.",
-      VALIDATION: "Au moins l'un des champs est invalide."
+      VALIDATION: "Au moins l'un des champs est invalide.",
+      AUTHENTICATION: "Identifiant ou mot de passe invalide."
     },
 
     VALIDATIONS: {
@@ -21,6 +22,7 @@ var languages = {
       EVENT: {
         NAME: "Événement",
         FIELDS: {
+          _ID: "Identifiant de l'événement",
           NAME: "Nom de l'événement",
           BEGINNING: "Date de lancement",
           ENDING: "Date de fin",
@@ -33,6 +35,14 @@ var languages = {
         NAME: "Match",
         FIELDS: {
           NBFIGHTS: "Nombre de combats"
+        }
+      },
+      USER: {
+        NAME: "Utilisateur",
+        FIELDS: {
+          _ID: "Id de l'utilisateur",
+          USERNAME: "Identifiant de l'utilisateur",
+          PASSWORD: "Mot de passe de l'utilisateur"
         }
       }
     },

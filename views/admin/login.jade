@@ -1,0 +1,12 @@
+extends ./layout
+block content
+  h1 Administration
+  form(action='login', method='post')
+    .formInput
+      label Identifiant
+      input(type='text', name='username')
+    .formInput
+      label Mot de passe
+      input(type='password', name='password')
+    .formInput
+      input(type='submit', value='Se connecter')
