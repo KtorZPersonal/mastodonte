@@ -1,24 +1,24 @@
 extends ../layout
 block content
   h1 Administration
-  h2= params.name
+  h2= data.name
 
   .eventInfo(class=['matchInfo'])
     .date Date de lancement 
-      =params.beginning
+      =data.beginning
     .date Date de fin 
-      =params.ending
+      =data.ending
     .number Participant max 
-      =params.maxPlayers
+      =data.maxPlayers
     .number Level minimum 
-      =params.minLevel
+      =data.minLevel
     .number Level maximum 
-      =params.maxLevel
+      =data.maxLevel
     .number Nombre de combats 
-      =params.nbFights
-  a(href='/admin/match/#{params.id}/edit', class=['edit']) Modifier
+      =data.nbFights
+  a(href='/admin/match/#{data.id}/edit', class=['edit']) Modifier
   span  | 
-  a(href='/admin/match/#{params.id}/delete', class=['delete']) Supprimer
+  a(href='/admin/match/#{data.id}/delete', class=['delete']) Supprimer
   br
   br
   a(href='/admin') Retour

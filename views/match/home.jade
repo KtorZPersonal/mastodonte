@@ -1,0 +1,11 @@
+extends ../layout
+block content
+  h1 Mastodonte, seul contre tous
+
+  h2 Matchs en cours
+    each match in data.started
+      p= match.name
+
+  h2 Matchs à venir
+  each match in data.coming
+    p #{match.name} (#{match.beginning.toUTCString()})

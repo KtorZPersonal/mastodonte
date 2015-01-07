@@ -25,7 +25,10 @@ var Match = mongoose.model('Match', matchSchema);
 
 /* Retrieve all active matches. i.e. All matches that are not already ended */
 var findAllActive = function(callback){
-  Match.where('nbFights').gt(0).exec(callback);
+  Match.where('nbFights').gt(0).exec(function(err, matches){
+    if(err) return callback(new ModelError('UNKNOWN'));
+    callback(null, matches);
+  });
 };
 
 /* Create and save a new match */

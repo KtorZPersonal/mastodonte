@@ -3,7 +3,6 @@ var validationsHelper = require('../../helpers/validations');
 var myPassport = require('../../middlewares/passport');
 var Match = require('../../models/Match');
 var th = require('../../helpers/textHandler');
-var validationsHelper = require('../../helpers/validations');
 
 /* Add all routes about matches */
 router.use('/match', myPassport.ensureAuthenticated, require('./match'));
@@ -11,7 +10,7 @@ router.use('/match', myPassport.ensureAuthenticated, require('./match'));
 /* Route to the admin's homepage */
 router.get('/', myPassport.ensureAuthenticated, function(req, res){
   /* Here, we handle flash messages, errors & previously posted parameters */
-  var locals = validationsHelper.locals(req, ['beginning', 'ending']);
+  var locals = validationsHelper.locals(req);
 
   /* Display all active events */
   Match.findAllActive(function(err, matches){

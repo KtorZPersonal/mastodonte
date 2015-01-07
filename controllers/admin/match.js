@@ -129,7 +129,7 @@ var modelResponseHandler = function(err, req, res, messages, destinations, match
     res.redirect(destinations[situation].path);
   } else {
     var locals = validationsHelper.locals(req);
-    if(situation == 'success' && match) locals.params = match;
+    if(situation == 'success' && match) locals.data = match;
     res.render(destinations[situation].path, locals);
   }
 }

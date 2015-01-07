@@ -7,20 +7,21 @@ module.exports = {
       info: req.flash('info')
     };
 
-    var params = req.session.params || {}; 
+    /* Join previous posted params to the response */
+    var data = req.session.params || {}; 
     delete req.session.params;
+    
+    /* Special handle for date */
+    for (var p in data)
+      if(data[p].datetype) data[p] = new Date(data[p].timestamp);
 
+    /* Add errors if there is some */
     var errors = {};
     if (messages.alert.length > 0) {
-      /* Join previous params to the response */
       errors = req.session.validationErrors || errors;
       delete req.session.validationErrors;
     }
 
-    /* Special handle for date */
-    for (var p in params)
-      if(params[p].datetype) params[p] = new Date(params[p].timestamp);
-
-    return {params: params, errors: errors, messages: messages};
+    return {data: data, errors: errors, messages: messages};
   },
 };

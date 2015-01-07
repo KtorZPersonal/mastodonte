@@ -5,12 +5,12 @@ block content
   h2 Édition d'un événement 
     span Mastodon
 
-  form(method='post', action='/admin/match/#{params.id}/edit')
+  form(method='post', action='/admin/match/#{data.id}/edit')
     include ./_matchForm
     .formInput
       input(type='submit', value='Modifier un événement')
 
-  a(href='/admin/match/#{params.id}/show') Retour
+  a(href='/admin/match/#{data.id}/show') Retour
 
 block scripts
   script(src='/dateSelector.js')
