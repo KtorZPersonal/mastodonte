@@ -4,8 +4,9 @@ block content
 
   h2 Matchs en cours
     each match in data.started
-      p= match.name
+      a(href="/match/#{match.id}/show")= match.name
 
   h2 Matchs à venir
   each match in data.coming
-    p #{match.name} (#{match.beginning.toUTCString()})
+    p
+      a(href="/match/#{match.id}/show") #{match.name} (#{match.beginning.toUTCString()})

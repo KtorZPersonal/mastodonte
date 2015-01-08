@@ -8,13 +8,20 @@ var ModelError = require('./ModelError');
 /* User's shape */
 var userSchema = new mongoose.Schema({
   username: {type: String, required: true, unique: true},
-  password: {type: String, required: true}
+  id2f: {type: Number, required: true},
+  type: {type: String, required: true},
+  avatar: {type: String, required: true},
+  verifiedMatch: {type: [Number], ref: 'Match', default: []},
+  verificationKey: {type: String, required: true},
+  password: {type: String}
 });
 userSchema.plugin(autoIncrement.plugin, 'User');
 
 /* Encrypt a password */
 userSchema.pre('save', function(next) {
   var user = this;
+  /* There is 2 kind of user. */
+  if(user.type == User.TYPES.PLAYER) return next();
   if(!user.isModified('password')) return next();
   bcrypt.genSalt(10, function(err, salt) {
     if(err) return next(err);
@@ -28,13 +35,23 @@ userSchema.pre('save', function(next) {
 
 /* Verify a password*/
 userSchema.methods.comparePassword = function(candidatePassword, cb) {
+  if(this.type == User.TYPES.PLAYER) return cb(new ModelError('AUTHENTICATION'));
   bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
     if(err) return cb(new ModelError('UNKNOWN'));
     cb(null, isMatch);
   });
 };
-var User = mongoose.model('User', userSchema);
 
+/* TODO! Validations */
+
+
+
+/* User's behavior */
+var User = mongoose.model('User', userSchema);
+User.TYPES = {
+  PLAYER: 'player',
+  MODERATOR: 'moderator'
+};
 
 /* Create a new user and save him in the db */
 var create = function(params, callback){
@@ -54,7 +71,7 @@ var findById = function(id, callback){
     if(user == null) return callback(new ModelError('ENTITY_NOT_FOUND', {entity: th.FR.MODELS.USER.NAME}));
     callback(null, user);
   });
-}
+};
 
 /* Find a user by username */
 var findByUsername = function(username, callback){
@@ -64,10 +81,23 @@ var findByUsername = function(username, callback){
     if(user == null) return callback(new ModelError('ENTITY_NOT_FOUND', {entity: th.FR.MODELS.USER.NAME}));
     callback(null, user);
   });
-}
+};
+
+/* Generate a key for validate a registration */
+var genValidationKey = function(){
+  var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!?@#:;()".split('');
+  var key = "";
+  for(var i = 0; i < 20; i++) {
+    key += chars[Math.floor(Math.random()*70)];
+  }
+  return key;
+};
+
 
 module.exports = {
   create: create,
   findById: findById,
-  findByUsername: findByUsername
+  findByUsername: findByUsername,
+  TYPES: User.TYPES,
+  genValidationKey: genValidationKey
 };

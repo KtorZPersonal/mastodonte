@@ -21,7 +21,8 @@ router.get('/', myPassport.ensureAuthenticated, function(req, res){
 
 /* Logout from the administration section */
 router.get('/logout', myPassport.ensureAuthenticated, function(req, res){
-
+  req.logout();
+  res.redirect('/admin')
 });
 
 

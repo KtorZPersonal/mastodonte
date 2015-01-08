@@ -82,6 +82,7 @@ module.exports = {
   like "@entity is blablabla", options should be like {entity: 'the name of my entity'}.
    */
   build: function(message, options) {
+    if(options == undefined) return message;
     var keys = message.match(/@([a-z]+)/g).map(function(a){return a.slice(1);});
     keys.forEach(function(key){
       message = message.replace('@'+key, options[key]);

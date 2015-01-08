@@ -1,0 +1,12 @@
+extends ../../layout
+block content
+  h1 Mastodonte, seul contre tous
+  include ../../match/_show
+  
+  br
+  form(action='/match/#{data.id}/register', method='post')
+    input(type='text', name='username')
+    br
+    input(type='submit', value='s\'enrôler')
+  br
+  a(href='/match/home') Retour

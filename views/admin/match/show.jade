@@ -1,21 +1,7 @@
 extends ../layout
 block content
   h1 Administration
-  h2= data.name
-
-  .eventInfo(class=['matchInfo'])
-    .date Date de lancement 
-      =data.beginning
-    .date Date de fin 
-      =data.ending
-    .number Participant max 
-      =data.maxPlayers
-    .number Level minimum 
-      =data.minLevel
-    .number Level maximum 
-      =data.maxLevel
-    .number Nombre de combats 
-      =data.nbFights
+  include ../../match/_show
   a(href='/admin/match/#{data.id}/edit', class=['edit']) Modifier
   span  | 
   a(href='/admin/match/#{data.id}/delete', class=['delete']) Supprimer

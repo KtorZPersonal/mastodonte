@@ -1,47 +1,38 @@
 var cheerio = require('cheerio');
-var zombie = require('request').defaults({
-  jar: true,
-});
+var zombie = require('request').defaults({jar: true});
+var cp = require('./connectParams');
 
-/**
-* Open a session with a zombie account
-* @param req Request param from Express.js
-* @param res Response param from Exrepss.js
-* @param next Next middleware to in queue
-*/
+/* Open a session with a zombie account */
 var connect = function(req, res, next){
   zombie.post({
-    url: "xxxxx",
+    url: cp.host,
     form: {
-      mail: "xxxxx",
-      passe: "xxxx",
+      mail: cp.mail,
+      passe: cp.password,
       connexion: "1"},
   }, function(err, response, body){
     req.connected = true;
+    console.log("connected to website...");
     next();
   });
 }
 
-/**
-* Extract data about a player, supposed that req contains a string param 'searchedPlayer'
-* @param req Request param from Express.js
-* @param res Response param from Exrepss.js
-* @param next Next middleware to in queue
-*/
+/* Extract data about a player, supposed that req contains a string param 'playerID' */
 var information = function(req, res, next){
-  req.information = {}
+  req.information = {};
   if(req.connected){
     zombie.get({
-      url:  "xxxxx",
+      url:  cp.host,
       qs: {
         page: "ficheMembre",
-        mec: req.params.searchedPlayer},
+        mec: req.body.username},
       }, function(err, response, body){
         var $ = cheerio.load(body);
         /* Extraire l'identifiant du joueur */ 
-        req.information.id = +$('a[href^="/index.php?page=ficheMembre"]')
+        var id = $('a[href^="/index.php?page=ficheMembre"]')
           .attr('href')
-          .match(/=([0-9]+)$/)[1];
+          .match(/=([0-9]+)$/);
+        req.information.id = id && +id[1];
 
         /* Extraire l'avatar du joueur */
         req.information.avatar = $('.avatarimage').children('img').attr('src');
