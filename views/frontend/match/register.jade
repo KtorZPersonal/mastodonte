@@ -1,0 +1,17 @@
+extends ../../layout
+block content
+  h1 Mastodonte, seul contre tous
+  
+  p.
+    Votre inscription est presque compléte. Afin de s'assurer que vous être bien le détenteur
+    du compte #{data.user.username}, merci de bien vouloir envoyer un message privée au joueur
+    Mastodonte sur 2fight, avec comme objet, la clé de validation ci-dessous :
+  br
+  p= data.key
+  br
+  br
+  p Une fois le message envoyé, cliquez sur le bouton ci-après pour finaliser votre inscription. 
+
+  form(action="/match/#{data.id}/confirm", method="post")
+    input(type="hidden", value="#{data.user.username}" name="username")
+    input(type="submit", value="C'est bon, c'est envoyé !")

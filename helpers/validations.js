@@ -25,7 +25,7 @@ var locals = function(req){
 };
 
 var responseHandler = function(err, req, res, messages, destinations, data){
-  var situation = 'success';
+  var situation = err ? 'failure' : 'success';
   if (err && err.name == 'ModelError') {
     if (err.type == 'VALIDATION') {
       /* Validation Error, let's display the pre-filled form again 
@@ -45,7 +45,6 @@ var responseHandler = function(err, req, res, messages, destinations, data){
     }
     /* With a little alert message to inform the user he fucked up */
     req.flash('alert', messages.alert);
-    situation = 'failure';
   } else {
     /* If everything is good, let's display the success page and inform the user */
     if(messages.info) req.flash('info', messages.info);

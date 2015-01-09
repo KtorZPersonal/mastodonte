@@ -6,7 +6,9 @@ var languages = {
       ENTITY_NOT_FOUND: "@entity recherché(e) n'existe pas.",
       ENTITIES_NOT_FOUND: "@entities recherché(e)s n'existe pas.",
       VALIDATION: "Au moins l'un des champs est invalide.",
-      AUTHENTICATION: "Identifiant ou mot de passe invalide."
+      AUTHENTICATION: "Identifiant ou mot de passe invalide.",
+      ALREADY_REGISTERED: "Vous êtes déjà inscrit(e) à cet événement.",
+      VALIDATION_KEY: "La vérification de l'identité a échoué."
     },
 
     VALIDATIONS: {

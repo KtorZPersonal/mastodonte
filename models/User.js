@@ -11,8 +11,8 @@ var userSchema = new mongoose.Schema({
   id2f: {type: Number, required: true},
   type: {type: String, required: true},
   avatar: {type: String, required: true},
-  verifiedMatch: {type: [Number], ref: 'Match', default: []},
-  verificationKey: {type: String, required: true},
+  verifiedMatches: [{type: Number, ref: 'Match'}],
+  verificationKeys: {type: mongoose.Schema.Types.Mixed},
   password: {type: String}
 });
 userSchema.plugin(autoIncrement.plugin, 'User');
@@ -66,7 +66,7 @@ var create = function(params, callback){
 /* Find a user by ID */
 var findById = function(id, callback){
   if(!/^[0-9]+$/.test(id)) return callback(new ModelError('INVALID_PARAM'));
-  User.findOne({_id: id}).exec(function(err, user){
+  User.findOne({_id: id}).populate('verifiedMatches').exec(function(err, user){
     if(err) return callback(new ModelError('UNKNOWN'));
     if(user == null) return callback(new ModelError('ENTITY_NOT_FOUND', {entity: th.FR.MODELS.USER.NAME}));
     callback(null, user);
@@ -76,19 +76,31 @@ var findById = function(id, callback){
 /* Find a user by username */
 var findByUsername = function(username, callback){
   if(!/^[a-zA-Z0-9_\.-]+$/.test(username)) return callback(new ModelError('INVALID_PARAM'));
-  User.findOne({username: username}).exec(function(err, user){
+  User.findOne({username: username}).populate('verifiedMatches').exec(function(err, user){
     if(err) return callback(new ModelError('UNKNOWN'));
     if(user == null) return callback(new ModelError('ENTITY_NOT_FOUND', {entity: th.FR.MODELS.USER.NAME}));
     callback(null, user);
   });
 };
 
+/* Update a user */
+var update = function(user, callback){
+  /* We can't call directly user.save.... Why ? Mongoose ? Didn't find the answer yet */
+  User.findById(user._id, function(err, dbUser){ 
+    for(p in user.schema.paths) dbUser[p] = user[p];
+    dbUser.save(function(err, updated, affected){
+      callback(err ? new ModelError('UNKNOWN') : null);
+    });
+  });
+}
+
+
 /* Generate a key for validate a registration */
 var genValidationKey = function(){
-  var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!?@#:;()".split('');
+  var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split('');
   var key = "";
-  for(var i = 0; i < 20; i++) {
-    key += chars[Math.floor(Math.random()*70)];
+  for(var i = 0; i < 28; i++) {
+    key += chars[Math.floor(Math.random()*62)];
   }
   return key;
 };
@@ -99,5 +111,6 @@ module.exports = {
   findById: findById,
   findByUsername: findByUsername,
   TYPES: User.TYPES,
-  genValidationKey: genValidationKey
+  genValidationKey: genValidationKey,
+  update: update
 };
