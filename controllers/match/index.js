@@ -8,9 +8,9 @@ var z = require('../../middlewares/zombie')
 /* Display all active matches and coming soon */
 router.get('/home', function(req, res){
   Match.findAllActive(function(err, matches){
-    var now = Date.now(); var data = {}; 
-    data.started = matches.filter(function(a){ return a.beginning.getTime() <= now });
-    data.coming = matches.filter(function(a){ return a.beginning.getTime() > now});
+    var data = {}; 
+    data.started = matches.filter(function(a){ return a.isStarted(); });
+    data.coming = matches.filter(function(a){ return !a.isStarted(); });
 
     var messages = { alert: err && err.message };
     var destinations = {
@@ -36,29 +36,36 @@ router.get('/:id/show', function(req, res){
   });
 });
 
-/* Register a new user */
-router.post('/:id/register', checkIfReg, z.connect, z.information, function(req, res){
+/* Prepare registration for a user. Two cases. The user already exists in the database as
+  he has participated to a previous event. Or, he doesn't, and one has to create a new entry
+  for this user. Both case will be exactly similar to the user. The app will send him a secret
+  key to verify his identity. 
+ */
+router.post('/:id/register', ensureEvent, ensureUser, z.connect, z.information, function(req, res){
   /* At this point, req.information contains data about the player. Let's create a new entry in the db */
   /* We will ask the user to insert a specific key in his signature, so it will be possible to validate him */
   var matchId = req.params.id;
-  var failureDestination = '/match/' + matchId + '/show';
   var key = User.genValidationKey();
+  var messages = {};
+  var destinations = {
+    failure: {style: 'redirect', path: '/match/' + matchId + '/show'},
+    success: {style: 'render', path: 'frontend/match/register'}
+  };
+  var data = {
+    key: key, 
+    id: matchId,
+  };
 
   if(req.user) {
     /* The user exist, but is not registered on this match */
     req.user.verificationKeys[matchId] = key;
     User.update(req.user, function(err){
-      if(err) {
-        req.flash('alert', err.message);
-        return res.redirect(failureDestination);
-      }
-      var locals = validationsHelper.locals(req);
-      locals.data = {
-        key: key, 
-        id: matchId, 
-        user: req.user
-      };
-      res.render('frontend/match/register', locals);
+      /* Error on the update... Just transmit the message */
+      messages.alert = err && err.message;
+
+      /* Everything is good, user has been updated. Send the data */
+      data.user = req.user;
+      validationsHelper.responseHandler(err, req, res, messages, destinations, data);
     });
   } else {
     /* The user doesn't exist yet */
@@ -72,19 +79,19 @@ router.post('/:id/register', checkIfReg, z.connect, z.information, function(req,
       avatar: req.information.avatar,
       verificationKeys: verificationKeys
     }, function(err, user){
-      var locals = validationsHelper.locals(req);
-      locals.data = {
-        key: key, 
-        id: matchId, 
-        user: user
-      };
-      res.render('frontend/match/register', locals);
+      console.log(err);
+      /* If error during the creation => Probably because some information are missing */
+      messages.alert = err && err.message;
+
+      /* Transmit the newly created user to the view*/
+      data.user = user;
+      validationsHelper.responseHandler(err, req, res, messages, destinations, data);
     });
   }
 });
 
 /* Validate a user subscription to a match */
-router.post('/:id/confirm', retrieveUser, z.connect, z.checkMails, function(req, res){
+router.post('/:id/confirm', ensureEvent, retrieveUser, z.connect, z.checkMails, function(req, res){
   /* After all middlewares, this means that, the user send with the post's params 
   exists, is registering for a match of id :id, and, has sent an email to the verification
   account with the good key ! Let's validate him */
@@ -93,23 +100,52 @@ router.post('/:id/confirm', retrieveUser, z.connect, z.checkMails, function(req,
 
   /* Key not found, bad user */
   if(!req.keyFound) {
-    req.flash('alert', th.FR.ERRORS.VALIDATION_KEY);
+    req.flash('alert', th.FR.SERVICES.IDENTITY_VERIFICATION.FAILURE);
     return res.redirect(destination);
   }
 
   /* Key found, update the user */
-  req.user.verifiedMatches.push(matchId);
+  req.user.verifiedEvents.push(matchId);
   delete req.user.verificationKeys[matchId];
   User.update(req.user, function(err) {
-    if(err) req.flash('alert', err.message);
-    res.redirect(destination);
+    var messages = {
+      alert: err && err.message,
+      info: th.FR.SERVICES.REGISTRATION.SUCCESS
+    };
+    var destinations = {
+      failure: {style: 'redirect', path: destination},
+      success: {style: 'redirect', path: destination}
+    };
+    validationsHelper.responseHandler(err, req, res, messages, destinations)
   });
 
 });
 
+/* Ensure that a user is trying to register to a valid event */
+function ensureEvent(req, res, next) {
+  var failureDestination = "/match/home";
+  Match.find(req.params.id, function(err, match){
+    /* An error with the database, most probable => the match doesn't exist */
+    if(err) {
+      req.flash('alert', err.message);
+      return res.redirect(failureDestination);
+    } 
+
+    /* No error, but, is the match started ? */
+    if(match.isStarted()) {
+      req.flash('alert', th.FR.ERRORS.INVALID_PARAM);
+      return res.redirect(failureDestination);
+    }
+
+    /* The match exist, registration are open, then let's go :) */
+    next();
+  });
+}
+
 /* Ensure that a user isn't already registered */
-function checkIfReg(req, res, next) {
+function ensureUser(req, res, next) {
   User.findByUsername(req.body.username, function(err, user) {
+    var matchId = +req.params.id;
 
     /* The user doesn't exist, it's okay, let's continue */
     if(err && err.name == 'ModelError' && err.type == 'ENTITY_NOT_FOUND') return next();
@@ -120,18 +156,19 @@ function checkIfReg(req, res, next) {
       /* If the user has been found, ensure he's not already verified for this match */
       req.user = user;
       isAlreadyRegistered = false;
-      user.verifiedMatches.forEach(function(match){
-        isAlreadyRegistered = isAlreadyRegistered || match._id == +req.params.id
+      user.verifiedEvents.forEach(function(match){
+        isAlreadyRegistered = isAlreadyRegistered || match._id == matchId;
       });
 
       /* Not already registered on this match */
       if(!isAlreadyRegistered) return next();
 
       /* Else, send him an alert message */
-      req.flash('alert', th.FR.ERRORS.ALREADY_REGISTERED);
+      req.flash('alert', th.FR.SERVICES.REGISTRATION.FAILURE);
     }
     
-    res.redirect('/match/' + +req.params.id + '/show');
+    /* Redirect without calling next() will stop the whole process */
+    res.redirect('/match/' + matchId + '/show');
   });
 }
 
@@ -145,15 +182,3 @@ function retrieveUser(req, res, next) {
 }
 
 module.exports = router;
-
-    // User.create({
-    //   username: 'KnightWalker',
-    //   id2f: 908,
-    //   type: User.TYPES.PLAYER,
-    //   avatar: '/upload/1408667567.png',
-    //   verificationKey: null,
-    //   verifiedMatches: [8]
-    // }, function(err, knight){
-    //   console.log(err);
-    //   res.send(knight);
-    // });

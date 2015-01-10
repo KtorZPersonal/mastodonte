@@ -55,17 +55,9 @@ var checkMails = function(req, res, next){
   });
 };
 
-var temp = function(req, res, next){
-  req.body = {
-    username: "ZellDintch"
-  };
-  next();
-};
-
 /* Do not forget to export */
 module.exports = {
   connect: connect,
   information: information,
-  temp: temp,
   checkMails: checkMails
 }

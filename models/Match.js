@@ -20,6 +20,11 @@ matchSchema.path('nbFights').validate(function(value){
   return /^-?[0-9]+$/.test(value) && +value > 0;
 }, th.build(th.FR.VALIDATIONS.STRICTSUP, {field: th.FR.MODELS.MATCH.FIELDS.NBFIGHTS, inf: 0}));
 
+/* Is a match started (thus, is it possible to register ?) */
+matchSchema.methods.isStarted = function() {
+  return Date.now() >= this.beginning.getTime();
+};
+
 /* Match's behaviors */
 var Match = mongoose.model('Match', matchSchema);
 

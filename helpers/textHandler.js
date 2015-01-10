@@ -7,8 +7,6 @@ var languages = {
       ENTITIES_NOT_FOUND: "@entities recherché(e)s n'existe pas.",
       VALIDATION: "Au moins l'un des champs est invalide.",
       AUTHENTICATION: "Identifiant ou mot de passe invalide.",
-      ALREADY_REGISTERED: "Vous êtes déjà inscrit(e) à cet événement.",
-      VALIDATION_KEY: "La vérification de l'identité a échoué."
     },
 
     VALIDATIONS: {
@@ -62,6 +60,13 @@ var languages = {
       },
       UPDATE: {
         SUCCESS: "@entity mis(e) à jour avec succès."
+      },
+      REGISTRATION: {
+        SUCCESS: "Inscription effectuée avec succès !",
+        FAILURE: "Vous êtes déjà inscrit(e) à cet événement."
+      },
+      IDENTITY_VERIFICATION: {
+        FAILURE: "La vérification de l'identité a échoué."
       }
     }
   }
