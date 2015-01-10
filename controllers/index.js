@@ -9,7 +9,7 @@ router.get('/', function(req, res){
 });
 
 router.get('/createUser', function(req, res){
-  require('../models/User').create({username: 'Shenron', password: 'xx14xx'}, function(err, user){
+  require('../models/User').create({username: 'Shenron', password: 'xx14xx', avatar: 'noAvatar', id2f: 0, type: 'moderator'}, function(err, user){
     if (err) console.log(err)
     res.redirect('/admin');
   });

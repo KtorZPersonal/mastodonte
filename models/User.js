@@ -86,12 +86,14 @@ var findByUsername = function(username, callback){
 };
 
 /* Update a user */
-var update = function(user, callback){
+var update = function(id, params, callback){
   /* Can't call directly user.save.... Why ? Mongoose ? Didn't find the answer yet */
-  User.findById(user._id, function(err, dbUser){ 
-    for(p in user.schema.paths) dbUser[p] = user[p];
-    dbUser.save(function(err, updated, affected){
-      callback(err ? new ModelError('UNKNOWN') : null);
+  User.findById(id, function(err, user){ 
+    for(p in user.schema.paths) user[p] = params[p];
+    user.save(function(err){
+      requiredErrorHelper(err, th.FR.MODELS.USER.FIELDS, function(err){
+        callback(err, user);
+      })
     });
   });
 }
@@ -102,6 +104,7 @@ var genValidationKey = function(){
   var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split('');
   var key = "";
   for(var i = 0; i < 28; i++) key += chars[Math.floor(Math.random()*62)];
+  return "g5L3yRpXAAaNJklgK4Qy939ZjYX3"; // temp
   return key;
 };
 

@@ -2,8 +2,9 @@ extends ../../layout
 block content
   h1 Mastodonte, seul contre tous
   include ../../match/_show
-  
+
   br
+  h2 Inscription
   form(action='/match/#{data.id}/register', method='post')
     input(type='text', name='username')
     br

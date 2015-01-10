@@ -12,3 +12,10 @@ h2= data.name
     =data.maxLevel
   .number Nombre de combats 
     =data.nbFights
+
+br
+br
+h2 Participants 
+each participant in data.players
+  .user
+    =participant.username

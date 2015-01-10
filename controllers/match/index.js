@@ -31,6 +31,7 @@ router.get('/:id/show', function(req, res){
       failure: {style: 'redirect', path: '/match/home'},
       success: {style: 'render', path: 'frontend/match/show'}
     };
+    console.log(match);
 
     validationsHelper.responseHandler(err, req, res, messages, destinations, match);
   });
@@ -79,7 +80,6 @@ router.post('/:id/register', ensureEvent, ensureUser, z.connect, z.information, 
       avatar: req.information.avatar,
       verificationKeys: verificationKeys
     }, function(err, user){
-      console.log(err);
       /* If error during the creation => Probably because some information are missing */
       messages.alert = err && err.message;
 
@@ -107,7 +107,7 @@ router.post('/:id/confirm', ensureEvent, retrieveUser, z.connect, z.checkMails, 
   /* Key found, update the user */
   req.user.verifiedEvents.push(matchId);
   delete req.user.verificationKeys[matchId];
-  User.update(req.user, function(err) {
+  User.update(req.user.id, req.user, function(err) {
     var messages = {
       alert: err && err.message,
       info: th.FR.SERVICES.REGISTRATION.SUCCESS
@@ -116,7 +116,12 @@ router.post('/:id/confirm', ensureEvent, retrieveUser, z.connect, z.checkMails, 
       failure: {style: 'redirect', path: destination},
       success: {style: 'redirect', path: destination}
     };
-    validationsHelper.responseHandler(err, req, res, messages, destinations)
+    if(err) validationsHelper.responseHandler(err, req, res, messages, destinations);
+    
+    Match.register(matchId, req.user.id, function(err){
+      messages.alert = err && err.messages;
+      validationsHelper.responseHandler(err, req, res, messages, destinations)  
+    });
   });
 
 });

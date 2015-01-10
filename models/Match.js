@@ -51,12 +51,12 @@ var create = function(params, callback){
 /* Retrieve a match from the database */
 var find = function(id, callback){
   if(!/^[0-9]+$/.test(id)) return callback(new ModelError('INVALID_PARAM'));
-  Match.findOne({_id: +id}).exec(function(err, match){
+  Match.findOne({_id: +id}).populate('players').exec(function(err, match){
     if(err) return callback(new ModelError('UNKNOWN'));
     if(match == null) return callback(new ModelError('ENTITY_NOT_FOUND', {entity: th.FR.MODELS.MATCH.NAME}));
     callback(null, match);
   });
-}
+};
 
 /* Delete a previously created event */
 var remove = function(id, callback){
@@ -65,7 +65,7 @@ var remove = function(id, callback){
     if(err) return callback(new ModelError('UNKNOWN'));
     callback();
   });
-}
+};
 
 /* Update and validate a match after modifications */
 var update = function(id, params, callback){
@@ -86,7 +86,24 @@ var update = function(id, params, callback){
       })
     });
   });
-}
+};
+
+/* Register a user as a participant */
+var register = function(matchId, userId, callback){
+  if(!/^[0-9]+$/.test(matchId) || !/^[0-9]+$/.test(userId)) return callback(new ModelError('INVALID_PARAM'));
+  Match.findOne({_id: +matchId}).exec(function(err, match){
+    if(err) return callback(new ModelError('UNKNOWN'));
+    if(match == null) return callback(new ModelError('ENTITY_NOT_FOUND', {entity: th.FR.MODELS.MATCH.NAME}));
+    //if(match.players.contains(userId)) return callback(new ModelError('INVALID_PARAM'));
+    match.players.push(+userId);
+    match.save(function(err){
+      requiredErrorHelper(err, th.FR.MODELS.MATCH.FIELDS, function(err){
+        callback(err, match);
+      })
+    });
+  });
+};
+
 
 /* Exports operations */
 module.exports = {
@@ -94,7 +111,8 @@ module.exports = {
   create: create,
   find: find,
   update: update,
-  remove: remove
+  remove: remove,
+  register: register
 };
 
 
