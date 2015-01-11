@@ -3,11 +3,19 @@ block content
   h1 Mastodonte, seul contre tous
   include ../../match/_show
 
-  br
-  h2 Inscription
-  form(action='/match/#{data.id}/register', method='post')
-    input(type='text', name='username')
-    br
-    input(type='submit', value='s\'enrôler')
+  -if(data.isStarted()){
+    h2 Valider un combat
+    form(action='/match/#{data.id}/validate', method='post')
+      input(type='number', name='idf')
+      br
+      input(type='submit', value='Valider le combat')
+  -} else {
+    h2 Inscription
+    form(action='/match/#{data.id}/register', method='post')
+      input(type='text', name='username')
+      br
+      input(type='submit', value='s\'enrôler')
+  -}
+
   br
   a(href='/match/home') Retour

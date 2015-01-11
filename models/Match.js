@@ -4,6 +4,7 @@ var requiredErrorHelper = require('../helpers/requiredError');
 var autoIncrement = require('mongoose-auto-increment');
 var ModelError = require('./ModelError');
 var th = require('../helpers/textHandler');
+//var schedule = require('node-schedule');
 
 /* Match's shape */
 var matchSchema = new mongoose.Schema({
@@ -25,6 +26,16 @@ matchSchema.methods.isStarted = function() {
   return Date.now() >= this.beginning.getTime();
 };
 
+/* Is a match ended (thus, is it possible to validate fight ?) */
+matchSchema.methods.isEnded = function() {
+  return this.nbFights <= 0;
+};
+
+/* Does a character respects the constraints */
+matchSchema.method.validsConstraints = function(character){
+  return character.level <= this.maxLevel && character.level >= this.minLevel;
+};
+
 /* Match's behaviors */
 var Match = mongoose.model('Match', matchSchema);
 
@@ -40,11 +51,13 @@ var findAllActive = function(callback){
 var create = function(params, callback){
   /* As params were formated by middlewares, it is possible to pass them 
   directly to the constructor */
+  //Little hack
+  params.beginning.setFullYear(2015);
   Match.create(params, function(err, match){
     /* Required Error Helper is used to translate the error message of missing fields */
     requiredErrorHelper(err, th.FR.MODELS.MATCH.FIELDS, function(err){
       callback(err, match);
-    })
+    });
   });
 };
 
@@ -53,7 +66,7 @@ var find = function(id, callback){
   if(!/^[0-9]+$/.test(id)) return callback(new ModelError('INVALID_PARAM'));
   Match.findOne({_id: +id}).populate('players').exec(function(err, match){
     if(err) return callback(new ModelError('UNKNOWN'));
-    if(match == null) return callback(new ModelError('ENTITY_NOT_FOUND', {entity: th.FR.MODELS.MATCH.NAME}));
+    if(match == undefined) return callback(new ModelError('ENTITY_NOT_FOUND', {entity: th.FR.MODELS.MATCH.NAME}));
     callback(null, match);
   });
 };
@@ -72,7 +85,7 @@ var update = function(id, params, callback){
   if(!/^[0-9]+$/.test(id)) return callback(new ModelError('INVALID_PARAM'));
   Match.findOne({_id: +id}).exec(function(err, match){
     if(err) return callback(new ModelError('UNKNOWN'));
-    if(match == null) return callback(new ModelError('ENTITY_NOT_FOUND', {entity: th.FR.MODELS.MATCH.NAME}));
+    if(match == undefined) return callback(new ModelError('ENTITY_NOT_FOUND', {entity: th.FR.MODELS.MATCH.NAME}));
     /* Update each new params and save to apply validations */
     matchSchema.eachPath(function(path){
       if (!/^_/.test(path)) {
@@ -93,7 +106,7 @@ var register = function(matchId, userId, callback){
   if(!/^[0-9]+$/.test(matchId) || !/^[0-9]+$/.test(userId)) return callback(new ModelError('INVALID_PARAM'));
   Match.findOne({_id: +matchId}).exec(function(err, match){
     if(err) return callback(new ModelError('UNKNOWN'));
-    if(match == null) return callback(new ModelError('ENTITY_NOT_FOUND', {entity: th.FR.MODELS.MATCH.NAME}));
+    if(match == undefined) return callback(new ModelError('ENTITY_NOT_FOUND', {entity: th.FR.MODELS.MATCH.NAME}));
     //if(match.players.contains(userId)) return callback(new ModelError('INVALID_PARAM'));
     match.players.push(+userId);
     match.save(function(err){
@@ -104,6 +117,26 @@ var register = function(matchId, userId, callback){
   });
 };
 
+/* Validate a fight */
+var validate = function(id, fight, callback){
+  /* First of all, look at the id */
+  if(!/^[0-9]+$/.test(id)) return callback(new ModelError('INVALID_PARAM'));
+  Match.findById(+id, function(err, match){
+    if(err) return callback(new ModelError('UNKNOWN'));
+    if(match == undefined) return callback(new ModelError('ENTITY_NOT_FOUND', {entity: th.FR.MODELS.MATCH.NAME}));
+    /* Check if the match is open for validation */
+    if(!match.isStarted || match.isEnded) return callback(new ModelError('NOT_A_VALID_MATCH'));
+    /* Check if users are registered for the match */
+    if(!fight.players.left.isRegisteredFor(id) || !fight.players.right.isRegisteredFor(id))
+      return callback(new ModelError('USER_NOT_REGISTERED'));
+    /* Check if characters respects match's constraints */
+    if(!match.validConstraints(fight.characters.left) || !match.validConstraints(fight.characters.right))
+      return callback(new ModelError('CONSTRAINT_VIOLATED'));
+
+    callback(null, match);
+  };
+};
+
 
 /* Exports operations */
 module.exports = {
@@ -112,7 +145,8 @@ module.exports = {
   find: find,
   update: update,
   remove: remove,
-  register: register
+  register: register,
+  validate: validate
 };
 
 

@@ -44,6 +44,15 @@ userSchema.methods.comparePassword = function(candidatePassword, cb) {
   });
 };
 
+/* Check if a user is registered for a match */
+userSchema.methods.isRegisteredFor(matchId){
+  var isAlreadyRegistered = false;
+  this.verifiedEvents.forEach(function(match){
+    isAlreadyRegistered = isAlreadyRegistered || match._id == matchId;
+  });
+  return isAlreadyRegistered;
+}
+
 /* TODO! Validations */
 
 
@@ -70,7 +79,7 @@ var findById = function(id, callback){
   if(!/^[0-9]+$/.test(id)) return callback(new ModelError('INVALID_PARAM'));
   User.findOne({_id: id}).populate('verifiedEvents').exec(function(err, user){
     if(err) return callback(new ModelError('UNKNOWN'));
-    if(user == null) return callback(new ModelError('ENTITY_NOT_FOUND', {entity: th.FR.MODELS.USER.NAME}));
+    if(user == undefined) return callback(new ModelError('ENTITY_NOT_FOUND', {entity: th.FR.MODELS.USER.NAME}));
     callback(null, user);
   });
 };
@@ -80,7 +89,7 @@ var findByUsername = function(username, callback){
   if(!/^[a-zA-Z0-9_\.-]+$/.test(username)) return callback(new ModelError('INVALID_PARAM'));
   User.findOne({username: username}).populate('verifiedEvents').exec(function(err, user){
     if(err) return callback(new ModelError('UNKNOWN'));
-    if(user == null) return callback(new ModelError('ENTITY_NOT_FOUND', {entity: th.FR.MODELS.USER.NAME}));
+    if(user == undefined) return callback(new ModelError('ENTITY_NOT_FOUND', {entity: th.FR.MODELS.USER.NAME}));
     callback(null, user);
   });
 };

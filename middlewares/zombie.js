@@ -55,9 +55,73 @@ var checkMails = function(req, res, next){
   });
 };
 
+/* Retrieve infos about a fight */
+var parseFight = function(req, res, next){
+  var id = +req.body.idf;
+  if(!id || !/^[0-9]+$/.test(id)) return next();
+  zombie.get({
+    url: cp.host + '/fr/seefight.php',
+    qs: { idf: id },
+  }, function(err, response, body){
+    if(body.match(/Fight non existant/)) return next();
+
+    var $ = cheerio.load(body);
+
+    var fight = {
+      players: {
+        left: $('.fleft > h3').first().text(),
+        right: $('.fright > h3').first().text()
+      },
+      characters: {
+        left: $('.fleft .iconeperso').first().attr('src'),
+        right: $('.fright .iconeperso').first().attr('src')
+      },
+      background: $('.scenecombat').attr('style').match(/url\((.*)\)/)[1],
+      rounds: []
+    };
+
+    $('.cadrefightv3').each(function(i, elem){
+      var newRound = {left:{}, right:{}};
+      /* Round num */
+      newRound.num = $('.numberround', elem).text();
+
+      /* There is 9 .cadrefightv3, the two last one have no num, and don't matter */
+      if(newRound.num != '') {
+        /* Damages of both side */
+        newRound.left.dmge = $('.fleft .barreattaque', elem).prev().text().match(/[0-9]+/);
+        newRound.right.dmge = $('.fright .barreattaque', elem).prev().text().match(/[0-9]+/);
+        newRound.right.dmge = newRound.right.dmge == null ? 0 : +newRound.right.dmge[0];
+        newRound.left.dmge = newRound.left.dmge == null ? 0 : +newRound.left.dmge[0];
+
+        /* Life of both side */
+        newRound.left.life = +$('.fleft .barreattaque', elem).prev().prev().text().match(/[0-9]+/)[0];
+        newRound.right.life = +$('.fright .barreattaque', elem).prev().prev().text().match(/[0-9]+/)[0];
+
+        /* Mana of both side */
+        newRound.left.mana = +$('.fleft .barremana', elem).prev().text().match(/[0-9]+/)[0];
+        newRound.right.mana = +$('.fright .barremana', elem).prev().text().match(/[0-9]+/)[0];
+
+        /* Absorption of both side */
+        newRound.left.abso = +$('.fleft .barredefense', elem).prev().text().match(/[0-9]*\.?[0-9]+/)[0];
+        newRound.right.abso = +$('.fright .barredefense', elem).prev().text().match(/[0-9]*\.?[0-9]+/)[0];
+
+        /* Fighters Image */
+        newRound.left.img = $('.gifgars1', elem).attr('src');
+        newRound.right.img = $('.gifgars2', elem).attr('src');
+
+        fight.rounds.push(newRound);
+      }
+    });
+
+    req.fight = fight;
+    next();
+  });
+};
+
 /* Do not forget to export */
 module.exports = {
   connect: connect,
   information: information,
-  checkMails: checkMails
+  checkMails: checkMails,
+  parseFight: parseFight,
 }

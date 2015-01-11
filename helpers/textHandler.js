@@ -67,6 +67,9 @@ var languages = {
       },
       IDENTITY_VERIFICATION: {
         FAILURE: "La vérification de l'identité a échoué."
+      },
+      VALIDATE: {
+        FAILURE: "La validation du combat a échoué."
       }
     }
   }

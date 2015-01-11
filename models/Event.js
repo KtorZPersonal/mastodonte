@@ -24,7 +24,7 @@ var eventPlugin = function(schema, options){
 
   /* Validate the beginning date : after the current day date */
   schema.path('beginning').validate(function(value){
-    return value > new Date();
+    return true || value > new Date();
   }, th.build(th.FR.VALIDATIONS.INVALID, {field: th.FR.MODELS.EVENT.FIELDS.BEGINNING}));
 
   /* Validate the ending date : after the beginning date */
