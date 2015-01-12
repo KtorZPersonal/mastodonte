@@ -11,15 +11,15 @@ var connect = function(req, res, next){
       passe: cp.password,
       connexion: "1"},
   }, function(err, response, body){
-    req.connected = true;
+    req.cData.connected = true;
     next();
   });
 };
 
 /* Extract data about a player, supposed that req contains a string param 'playerID' */
 var information = function(req, res, next){
-  req.information = {};
-  if(!req.connected) next();
+  req.cData.information = {};
+  if(!req.cData.connected) next();
 
   zombie.get({
     url:  cp.host,
@@ -32,10 +32,10 @@ var information = function(req, res, next){
       var id = $('a[href^="/index.php?page=ficheMembre"]')
         .attr('href')
         .match(/=([0-9]+)$/);
-      req.information.id = id && +id[1];
+      req.cData.information.id = id && +id[1];
 
       /* Extraire l'avatar du joueur */
-      req.information.avatar = $('.avatarimage').children('img').attr('src');
+      req.cData.information.avatar = $('.avatarimage').children('img').attr('src');
 
       next();
     });
@@ -43,14 +43,14 @@ var information = function(req, res, next){
 
 /* Check for a particular email in the mailbox */
 var checkMails = function(req, res, next){
-  if(!req.connected || !req.user) return next();
+  if(!req.cData.connected || !req.cData.user) return next();
   zombie.post({
     url: cp.host + "/index.php?page=messagerie&box=received",
     form: {
       'rech[BOURRIN]': "1",
       'rech[RECHGARS]': req.body.username}
     }, function(err, response, body){
-      req.keyFound = body.match(new RegExp(req.user.verificationKeys[req.params.id])) != null;
+      req.cData.keyFound = body.match(new RegExp(req.cData.user.verificationKeys[req.params.id])) != null;
       next();
   });
 };
@@ -113,7 +113,7 @@ var parseFight = function(req, res, next){
       }
     });
 
-    req.fight = fight;
+    req.cData.fight = fight;
     next();
   });
 };

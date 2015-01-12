@@ -60,7 +60,7 @@ var responseHandler = function(err, req, res, messages, destinations, data){
     if(data) _locals.data = data;
     res.render(destinations[situation].path, _locals);
   }
-};
+},
 
 /* Use to handle validations parameters passing during errors and flash messages */
 module.exports = {

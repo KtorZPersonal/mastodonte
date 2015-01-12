@@ -51,8 +51,7 @@ var findAllActive = function(callback){
 var create = function(params, callback){
   /* As params were formated by middlewares, it is possible to pass them 
   directly to the constructor */
-  //Little hack
-  params.beginning.setFullYear(2015);
+  params.beginning.setFullYear(2015); //Little hack
   Match.create(params, function(err, match){
     /* Required Error Helper is used to translate the error message of missing fields */
     requiredErrorHelper(err, th.FR.MODELS.MATCH.FIELDS, function(err){
@@ -118,7 +117,7 @@ var register = function(matchId, userId, callback){
 };
 
 /* Validate a fight */
-var validate = function(id, fight, callback){
+var validateFight = function(id, fight, callback){
   /* First of all, look at the id */
   if(!/^[0-9]+$/.test(id)) return callback(new ModelError('INVALID_PARAM'));
   Match.findById(+id, function(err, match){
@@ -146,7 +145,7 @@ module.exports = {
   update: update,
   remove: remove,
   register: register,
-  validate: validate
+  validateFight: validateFight
 };
 
 

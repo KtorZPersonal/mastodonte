@@ -48,6 +48,19 @@ var languages = {
           USERNAME: "Identifiant de l'utilisateur",
           PASSWORD: "Mot de passe de l'utilisateur"
         }
+      },
+      FIGHT: {
+        NAME: "Le combat",
+        NAME_PLU: "Les combats",
+        FIELDS: {
+          _ID: "L'id du combat",
+          PLAYERS: "Les joueurs",
+          WINNER: "Le vainqueur",
+          ROUNDS: "Les rounds",
+          BACKGROUND: "L'arrière-plan",
+          CHARACTERS: "Les personnages",
+          DATE: "La date"
+        }
       }
     },
 

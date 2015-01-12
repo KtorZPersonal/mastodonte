@@ -45,13 +45,13 @@ userSchema.methods.comparePassword = function(candidatePassword, cb) {
 };
 
 /* Check if a user is registered for a match */
-userSchema.methods.isRegisteredFor(matchId){
+userSchema.methods.isRegisteredFor = function(matchId){
   var isAlreadyRegistered = false;
   this.verifiedEvents.forEach(function(match){
     isAlreadyRegistered = isAlreadyRegistered || match._id == matchId;
   });
   return isAlreadyRegistered;
-}
+};
 
 /* TODO! Validations */
 
@@ -105,8 +105,20 @@ var update = function(id, params, callback){
       })
     });
   });
-}
+};
 
+/* Register a user for a match */
+var register = function(userParams, matchId, key, callback){
+  userParams.verificationKeys[matchId] = key;
+  if(userParams.id) {
+    /* The user exist, but is not registered on this match */
+    //TODO check is already registered
+    update(userParams.id, userParams, callback);
+  } else {
+    /* The user doesn't exist yet, let's create it */
+    create(userParams, callback);
+  }
+};
 
 /* Generate a key for validate a registration */
 var genValidationKey = function(){
@@ -117,6 +129,16 @@ var genValidationKey = function(){
   return key;
 };
 
+var createShape = function(username, id2f, avatar){
+  return {
+    username: username,
+    id2f: id2f,
+    avatar: avatar,
+    verificationKeys: {},
+    type: User.TYPES.PLAYER
+  };
+};
+
 
 module.exports = {
   create: create,
@@ -124,5 +146,7 @@ module.exports = {
   findByUsername: findByUsername,
   TYPES: User.TYPES,
   genValidationKey: genValidationKey,
-  update: update
+  update: update,
+  register: register,
+  createShape: createShape
 };
