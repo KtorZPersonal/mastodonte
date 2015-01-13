@@ -1,7 +1,7 @@
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var User = require('../models/User');
-var th = require('../helpers/textHandler')
+var texts = require('../helpers/texts')
 
 /* User has to be serialized and unserialized to be 
 passed though session */
@@ -21,7 +21,7 @@ passport.use(new LocalStrategy(function(username, password, done){
     if (err) return done(err, false);
     user.comparePassword(password, function(err, isMatch){
       if (err) return done(err, false);
-      if (!isMatch) return done(null, false, { message: th.FR.ERRORS.AUTHENTICATION })
+      if (!isMatch) return done(null, false, { message: texts.FR.ERRORS.AUTHENTICATION })
       return done(null, user);
     });
   });

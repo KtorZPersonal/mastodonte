@@ -20,7 +20,8 @@ app.use(myPassport.initialize());
 app.use(myPassport.session());
 
 /* Routes */
-app.use(require('./controllers'));
+app.use(require('./routers'));
+app.use(require('./middlewares/errorHandler'));
 app.use(express.static(process.cwd() + '/public/libs/'));
 app.use(express.static(process.cwd() + '/public/javascript/'));
 app.use(express.static(process.cwd() + '/public/css/'));

@@ -1,9 +1,9 @@
 var mongoose = require('mongoose');
 var autoIncrement = require('mongoose-auto-increment');
 var bcrypt = require('bcrypt-nodejs');
-var requiredErrorHelper = require('../helpers/requiredError');
-var th = require('../helpers/textHandler');
-var ModelError = require('./ModelError');
+var FrontendError = require('./FrontendError');
+var errorHelper = require('../helpers/errors');
+var texts = require('../helpers/texts');
 
 /* User's shape */
 var userSchema = new mongoose.Schema({
@@ -37,9 +37,9 @@ userSchema.pre('save', function(next) {
 
 /* Verify a password*/
 userSchema.methods.comparePassword = function(candidatePassword, cb) {
-  if(this.type == User.TYPES.PLAYER) return cb(new ModelError('AUTHENTICATION'));
+  if(this.type == User.TYPES.PLAYER) return cb(new FrontendError('AUTHENTICATION'));
   bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
-    if(err) return cb(new ModelError('UNKNOWN'));
+    if(err) return cb(new FrontendError('UNKNOWN'));
     cb(null, isMatch);
   });
 };
@@ -56,19 +56,14 @@ userSchema.methods.isRegisteredFor = function(matchId){
 /* TODO! Validations */
 
 
-
 /* User's behavior */
 var User = mongoose.model('User', userSchema);
-User.TYPES = {
-  PLAYER: 'player',
-  MODERATOR: 'moderator'
-};
 
 /* Create a new user and save him in the db */
 var create = function(params, callback){
   User.create(params, function(err, user){
     /* Required Error Helper is used to translate the error message of missing fields */
-    requiredErrorHelper(err, th.FR.MODELS.USER.FIELDS, function(err){
+    errorHelper(err, texts.FR.MODELS.USER.FIELDS, function(err){
       callback(err, user);
     });
   });
@@ -76,20 +71,20 @@ var create = function(params, callback){
 
 /* Find a user by ID */
 var findById = function(id, callback){
-  if(!/^[0-9]+$/.test(id)) return callback(new ModelError('INVALID_PARAM'));
+  if(!/^[0-9]+$/.test(id)) return callback(new FrontendError('INVALID_PARAM'));
   User.findOne({_id: id}).populate('verifiedEvents').exec(function(err, user){
-    if(err) return callback(new ModelError('UNKNOWN'));
-    if(user == undefined) return callback(new ModelError('ENTITY_NOT_FOUND', {entity: th.FR.MODELS.USER.NAME}));
+    if(err) return callback(new FrontendError('UNKNOWN'));
+    if(user == undefined) return callback(new FrontendError('ENTITY_NOT_FOUND', {entity: texts.FR.MODELS.USER.NAME}));
     callback(null, user);
   });
 };
 
 /* Find a user by username */
 var findByUsername = function(username, callback){
-  if(!/^[a-zA-Z0-9_\.-]+$/.test(username)) return callback(new ModelError('INVALID_PARAM'));
+  if(!/^[a-zA-Z0-9_\.-]+$/.test(username)) return callback(new FrontendError('INVALID_PARAM'));
   User.findOne({username: username}).populate('verifiedEvents').exec(function(err, user){
-    if(err) return callback(new ModelError('UNKNOWN'));
-    if(user == undefined) return callback(new ModelError('ENTITY_NOT_FOUND', {entity: th.FR.MODELS.USER.NAME}));
+    if(err) return callback(new FrontendError('UNKNOWN'));
+    if(user == undefined) return callback(new FrontendError('ENTITY_NOT_FOUND', {entity: texts.FR.MODELS.USER.NAME}));
     callback(null, user);
   });
 };
@@ -100,7 +95,7 @@ var update = function(id, params, callback){
   User.findById(id, function(err, user){ 
     for(p in user.schema.paths) user[p] = params[p];
     user.save(function(err){
-      requiredErrorHelper(err, th.FR.MODELS.USER.FIELDS, function(err){
+      errorHelper(err, texts.FR.MODELS.USER.FIELDS, function(err){
         callback(err, user);
       })
     });
@@ -124,7 +119,7 @@ var register = function(userParams, matchId, key, callback){
 var genValidationKey = function(){
   var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split('');
   var key = "";
-  for(var i = 0; i < 28; i++) key += chars[Math.floor(Math.random()*62)];
+  for(var i = 0; i < 28; i++) key += chars[Matexts.floor(Matexts.random()*62)];
   return "g5L3yRpXAAaNJklgK4Qy939ZjYX3"; // temp
   return key;
 };
@@ -139,6 +134,10 @@ var createShape = function(username, id2f, avatar){
   };
 };
 
+User.TYPES = {
+  PLAYER: 'player',
+  MODERATOR: 'moderator'
+};
 
 module.exports = {
   create: create,

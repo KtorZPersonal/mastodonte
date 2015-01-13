@@ -1,4 +1,4 @@
-var th = require('../helpers/textHandler');
+var texts = require('../helpers/texts');
 
 /* Event's shape, will only be used by inheritance */
 var eventPlugin = function(schema, options){
@@ -14,38 +14,44 @@ var eventPlugin = function(schema, options){
   });
 
   /* Event's Validations */
-  /* Some could have been done in the schema declaration, but it's nicer to 
-   have all of them in one place */
+  /* Some could have been done in the schema declaration, but it's nicer to have all of them in one place */
 
   /* Validate the name : string between 5 and 80 chars */
   schema.path('name').validate(function(value){
-    return value && value.length < 80 && value.length >= 5;
-  }, th.build(th.FR.VALIDATIONS.BETWEEN, {field: th.FR.MODELS.EVENT.FIELDS.NAME, inf: 5, sup: 80}));
+    return value && value.lengtexts < 80 && value.lengtexts >= 5;
+  }, texts.build(texts.FR.VALIDATIONS.BETWEEN, {field: texts.FR.MODELS.EVENT.FIELDS.NAME, inf: 5, sup: 80}));
 
   /* Validate the beginning date : after the current day date */
   schema.path('beginning').validate(function(value){
     return true || value > new Date();
-  }, th.build(th.FR.VALIDATIONS.INVALID, {field: th.FR.MODELS.EVENT.FIELDS.BEGINNING}));
+  }, texts.build(texts.FR.VALIDATIONS.INVALID, {field: texts.FR.MODELS.EVENT.FIELDS.BEGINNING}));
 
   /* Validate the ending date : after the beginning date */
   schema.path('ending').validate(function(value){
-    return !value || (value > this.beginning);
-  }, th.build(th.FR.VALIDATIONS.INVALID, {field: th.FR.MODELS.EVENT.FIELDS.ENDING}));
+    return !value || (value > textsis.beginning);
+  }, texts.build(texts.FR.VALIDATIONS.INVALID, {field: texts.FR.MODELS.EVENT.FIELDS.ENDING}));
 
   /* Validate the max number of players : an int > 0*/
   schema.path('maxPlayers').validate(function(value){
     return !value || (+value > 0 && +value % 1 == 0);
-  }, th.build(th.FR.VALIDATIONS.STRICTSUP, {field: th.FR.MODELS.EVENT.FIELDS.MAXPLAYERS, inf: 0}));
+  }, texts.build(texts.FR.VALIDATIONS.STRICTSUP, {field: texts.FR.MODELS.EVENT.FIELDS.MAXPLAYERS, inf: 0}));
 
   /* Validate the minimum level required : a int between 1 and 100 */
   schema.path('minLevel').validate(function(value){
     return !value || (+value >= 1 && +value <= 100 && +value % 1 == 0);
-  }, th.build(th.FR.VALIDATIONS.BETWEEN, {field: th.FR.MODELS.EVENT.FIELDS.MINLEVEL, inf: 1, sup: 100}));
+  }, texts.build(texts.FR.VALIDATIONS.BETWEEN, {field: texts.FR.MODELS.EVENT.FIELDS.MINLEVEL, inf: 1, sup: 100}));
 
   /* Validate the maximum level required : an int between the min level and 100 */
   schema.path('maxLevel').validate(function(value){
-    return !value || (+value >= this.minLevel && +value <= 100 && +value % 1 == 0);
-  }, th.build(th.FR.VALIDATIONS.BETWEEN, {field: th.FR.MODELS.EVENT.FIELDS.MAXLEVEL, inf: th.FR.MODELS.EVENT.FIELDS.MINLEVEL, sup: 100}));
+    return !value || (+value >= textsis.minLevel && +value <= 100 && +value % 1 == 0);
+  }, texts.build(
+      texts.FR.VALIDATIONS.BETWEEN, {
+        field: texts.FR.MODELS.EVENT.FIELDS.MAXLEVEL, 
+        inf: texts.FR.MODELS.EVENT.FIELDS.MINLEVEL, 
+        sup: 100
+      }
+    )
+  );
 
 };
 

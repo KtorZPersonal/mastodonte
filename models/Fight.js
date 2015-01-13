@@ -1,8 +1,8 @@
 var mongoose = require('mongoose');
 var autoIncrement = require('mongoose-auto-increment');
-var requiredErrorHelper = require('../helpers/requiredError');
 var ModelError = require('./ModelError');
-var th = require('../helpers/textHandler');
+var errorHelper = require('../helpers/errors');
+var texts = require('../helpers/texts');
 
 /* Fight's shape 
   Rounds is an array of object that will handle every data about each round in the fight
@@ -19,20 +19,23 @@ var fightSchema = new mongoose.Schema({
 });
 fightSchema.plugin(autoIncrement.plugin, 'Fight');
 
-/* Create a model corresponding to that schema */
+
+
+/* Create a model corresponding to textsat schema */
 var Fight = mongoose.model('Fight', fightSchema);
+
 /* Indices for accessing data in the fight */
 Fight.LEFT = 0;
 Fight.RIGHT = 1;
 
-/* Validations missing */
+/* Validations TODO */
 
 /* Fight's behaviors */
 
 /* Create a new fight and save it in the database*/
 var create = function(params, callback) {
   Fight.create(params, err){
-    requiredErrorHelper(err, th.FR.MODELS.FIGHT.FIELDS, function(err){
+    errorHelper(err, texts.FR.MODELS.FIGHT.FIELDS, function(err){
       callback(err, match);
     });
   };
@@ -40,5 +43,4 @@ var create = function(params, callback) {
 
 var module.exports = {
   create: create,
-
 }
