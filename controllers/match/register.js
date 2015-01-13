@@ -3,6 +3,7 @@ var validationsHelper = require('../../helpers/validations');
 var Match = require('../../models/Match');
 var User = require('../../models/User');
 var th = require('../../helpers/textHandler');
+var cu = require('../../middlewares/controllerUtils');
 var z = require('../../middlewares/zombie');
 
 /* Prepare registration for a user. Two cases. The user already exists in the database as
@@ -10,33 +11,32 @@ var z = require('../../middlewares/zombie');
   for this user. Both case will be exactly similar to the user. The app will send him a secret
   key to verify his identity. 
  */
-router.post('/:id/register', z.connect, z.information, retrieveUser, function(req, res){
+router.post('/register', z.connect, z.information, function(req, res){
   var matchId = req.params.id; 
   /* Prepare return data for the validation helper */
-  var messages = { alert: th.SERVICES.REGISTRATION.FAILURE };
+  var messages = { alert: th.FR.SERVICES.REGISTRATION.FAILURE };
   var destinations = {
     failure: {style: 'redirect', path: '/match/' + matchId + '/show'},
     success: {style: 'render', path: 'frontend/match/register'}
   };
 
-  /* At this point, req.cData.user should contain data about the player */
-  if(!req.cData.user) {
+  /* At this point, req.cData.information should contain data about the player */
+  if(!req.cData.information) {
     req.flash('alert', messages.alert);
     return res.redirect(destinations.failure.path);
   }
 
   /* We will ask the user to send a specific key by mail to validate him */
-  var key = User.genValidationKey();
-  User.register(req.cData.user, matchId, key, function(err, user){
-    messages.alert = err && err.message;
-    var data = { key: key, id: matchId, user: user };
-    validationsHelper.responseHandler(err, req, res, messages, destinations, data);
-  });
+  req.session.params = {};
+  req.session.params.user = User.createShape(req.body.username, req.cData.information.id, 
+    req.cData.information.avatar);
+  req.session.params.verificationKey = User.genValidationKey();
+  req.session.params.id = matchId;
+  res.render(destinations.success, validationsHelper.locals(req));
 });
 
-
 /* Validate a user subscription to a match */
-router.post('/:id/confirm', retrieveUser, z.connect, z.checkMails, function(req, res){
+router.post('/confirm', z.connect, z.checkMails, function(req, res){
   /* After all middlewares, this means that, the user send with the post's params 
   exists, is registering for a match of id :id, and, has sent an email to the verification
   account with the good key ! Let's validate him */

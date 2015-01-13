@@ -1,8 +1,9 @@
 var router = require('express').Router();
+var controllerUtils = require('../middlewares/controllerUtils');
 
 /* Include all routes about the admin section */
-router.use('/admin', require('./admin'));
-router.use('/match', require('./match'));
+router.use('/admin', controllerUtils.init, require('./admin'));
+router.use('/match', controllerUtils.init, require('./match'));
 
 router.get('/', function(req, res){
   res.redirect('/match/home')

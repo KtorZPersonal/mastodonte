@@ -7,7 +7,6 @@ var bodyParser = require('body-parser');
 var session = require('express-session');
 var flash = require('express-flash');
 var myPassport = require('./middlewares/passport');
-var controllerUtils = require('./middlewares/controllerUtils');
 
 /* Globally configure the app */
 app.set('view engine', 'jade');
@@ -21,7 +20,7 @@ app.use(myPassport.initialize());
 app.use(myPassport.session());
 
 /* Routes */
-app.use(controllerUtils.init(), require('./controllers'));
+app.use(require('./controllers'));
 app.use(express.static(process.cwd() + '/public/libs/'));
 app.use(express.static(process.cwd() + '/public/javascript/'));
 app.use(express.static(process.cwd() + '/public/css/'));

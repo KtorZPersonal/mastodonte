@@ -133,7 +133,7 @@ var validateFight = function(id, fight, callback){
       return callback(new ModelError('CONSTRAINT_VIOLATED'));
 
     callback(null, match);
-  };
+  });
 };
 
 
