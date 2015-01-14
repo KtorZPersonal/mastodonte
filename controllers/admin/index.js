@@ -10,7 +10,7 @@ module.exports = {
 
     /* Display all active events */
     Match.findAllActive(function(err, matches){
-      locals.matches = matches;
+      locals.data.matches = matches;
       res.render('admin/home', locals);
     });
   },
@@ -27,22 +27,15 @@ module.exports = {
   },
 
   /* Handle a login request */
-  connect: function(req, res) {
+  connect: function(req, res, next) {
     myPassport.authenticate('local', { badRequestMessage: texts.FR.ERRORS.AUTHENTICATION },
       function(err, user, info){
-        if(err || info) {
-          /* Don't want to inform user of the real nature of the error. */
-          var message = err ? 
-            (err.name == 'ModelError' && err.type != 'UNKNOWN' ? texts.FR.ERRORS.AUTHENTICATION : err.message)
-            : info.message;
-          req.flash('alert', message);
-          res.redirect('/admin/login');
-        } else {
-          /* Authenticate the user */
-          req.login(user, function(){
-            res.redirect('/admin');
-          })
-        }
+        if(err) return next(err);
+
+        /* Connect the user and redirect him to the homepage */
+        req.login(user, function(){
+          res.redirect('/admin');
+        });
       }
     )(req, res);
   },

@@ -39,7 +39,7 @@ userSchema.pre('save', function(next) {
 userSchema.methods.comparePassword = function(candidatePassword, cb) {
   if(this.type == User.TYPES.PLAYER) return cb(new FrontendError('AUTHENTICATION'));
   bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
-    if(err) return cb(new FrontendError('UNKNOWN'));
+    if(err) return cb(new FrontendError('UNKNOWN', err));
     cb(null, isMatch);
   });
 };
@@ -71,9 +71,8 @@ var create = function(params, callback){
 
 /* Find a user by ID */
 var findById = function(id, callback){
-  if(!/^[0-9]+$/.test(id)) return callback(new FrontendError('INVALID_PARAM'));
   User.findOne({_id: id}).populate('verifiedEvents').exec(function(err, user){
-    if(err) return callback(new FrontendError('UNKNOWN'));
+    if(err) return callback(new FrontendError('UNKNOWN', err));
     if(user == undefined) return callback(new FrontendError('ENTITY_NOT_FOUND', {entity: texts.FR.MODELS.USER.NAME}));
     callback(null, user);
   });
@@ -81,9 +80,8 @@ var findById = function(id, callback){
 
 /* Find a user by username */
 var findByUsername = function(username, callback){
-  if(!/^[a-zA-Z0-9_\.-]+$/.test(username)) return callback(new FrontendError('INVALID_PARAM'));
   User.findOne({username: username}).populate('verifiedEvents').exec(function(err, user){
-    if(err) return callback(new FrontendError('UNKNOWN'));
+    if(err) return callback(new FrontendError('UNKNOWN', err));
     if(user == undefined) return callback(new FrontendError('ENTITY_NOT_FOUND', {entity: texts.FR.MODELS.USER.NAME}));
     callback(null, user);
   });
@@ -95,7 +93,7 @@ var update = function(id, params, callback){
   User.findById(id, function(err, user){ 
     for(p in user.schema.paths) user[p] = params[p];
     user.save(function(err){
-      errorHelper(err, texts.FR.MODELS.USER.FIELDS, function(err){
+      errorHelper.format(err, texts.FR.MODELS.USER.FIELDS, function(err){
         callback(err, user);
       })
     });
@@ -107,7 +105,7 @@ var register = function(userParams, matchId, key, callback){
   userParams.verificationKeys[matchId] = key;
   if(userParams.id) {
     /* The user exist, but is not registered on this match */
-    //TODO check is already registered
+    //TODO check if already registered
     update(userParams.id, userParams, callback);
   } else {
     /* The user doesn't exist yet, let's create it */

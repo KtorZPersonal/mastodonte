@@ -1,3 +1,5 @@
+var FrontendError = require('../models/FrontendError');
+
 module.exports = {
   /* Middleware called before any other middleware during the routing process. 
   Just create an empty object used to store data manipulated by controllers without
@@ -52,6 +54,16 @@ module.exports = {
       }
     }
     next();
+  },
+
+  ensureParams: {
+    id: function(destination) {
+      return (function(req, res, next, id) {
+        var error = /^[0-9]+$/.test(id) ? null : new FrontendError('INVALID_PARAM', destination);
+        if(!error) req.params.id = +id; // Cast in int
+        next(error);
+      });
+    }
   },
 
   retrieveUsers: function(req, res, next) {

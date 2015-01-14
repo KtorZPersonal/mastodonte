@@ -48,11 +48,10 @@ var findAllActive = function(callback){
 
 /* Create and save a new match */
 var create = function(params, callback){
-  /* As params were formated by middlewares, it is possible to pass them 
-  directly to the constructor */
+  /* As params were formated by middlewares, it is possible to pass them directly to the constructor */
   Match.create(params, function(err, match){
     /* Required Error Helper is used to translate the error message of missing fields */
-    errorHelper(err, texts.FR.MODELS.MATCH.FIELDS, function(err){
+    errorHelper.format(err, texts.FR.MODELS.MATCH.FIELDS, function(err){
       callback(err, match);
     });
   });
@@ -60,8 +59,7 @@ var create = function(params, callback){
 
 /* Retrieve a match from the database */
 var find = function(id, callback){
-  if(!/^[0-9]+$/.test(id)) return callback(new FrontendError('INVALID_PARAM'));
-  Match.findOne({_id: +id}).populate('players').exec(function(err, match){
+  Match.findOne({_id: +id}).populate('players').exec(function(err, match) {
     if(err) return callback(new FrontendError('UNKNOWN'));
     if(match == undefined) return callback(new FrontendError('ENTITY_NOT_FOUND', {entity: texts.FR.MODELS.MATCH.NAME}));
     callback(null, match);
@@ -70,8 +68,7 @@ var find = function(id, callback){
 
 /* Delete a previously created event */
 var remove = function(id, callback){
-  if(!/^[0-9]+$/.test(id)) return callback(new FrontendError('INVALID_PARAM'));
-  Match.remove({_id: +id}).exec(function(err){
+  Match.remove({_id: +id}).exec(function(err) {
     if(err) return callback(new FrontendError('UNKNOWN'));
     callback();
   });
@@ -79,8 +76,7 @@ var remove = function(id, callback){
 
 /* Update and validate a match after modifications */
 var update = function(id, params, callback){
-  if(!/^[0-9]+$/.test(id)) return callback(new FrontendError('INVALID_PARAM'));
-  Match.findOne({_id: +id}).exec(function(err, match){
+  Match.findOne({_id: +id}).exec(function(err, match) {
     if(err) return callback(new FrontendError('UNKNOWN'));
     if(match == undefined) return callback(new FrontendError('ENTITY_NOT_FOUND', {entity: texts.FR.MODELS.MATCH.NAME}));
     /* Update each new params and save to apply validations */
@@ -99,8 +95,7 @@ var update = function(id, params, callback){
 };
 
 /* Register a user as a participant */
-var register = function(matchId, userId, callback){
-  if(!/^[0-9]+$/.test(matchId) || !/^[0-9]+$/.test(userId)) return callback(new FrontendError('INVALID_PARAM'));
+var register = function(matchId, userId, callback) {
   Match.findOne({_id: +matchId}).exec(function(err, match){
     if(err) return callback(new FrontendError('UNKNOWN'));
     if(match == undefined) return callback(new FrontendError('ENTITY_NOT_FOUND', {entity: texts.FR.MODELS.MATCH.NAME}));
@@ -116,9 +111,7 @@ var register = function(matchId, userId, callback){
 
 /* Validate a fight */
 var validateFight = function(id, fight, callback){
-  /* First of all, look at the id */
-  if(!/^[0-9]+$/.test(id)) return callback(new FrontendError('INVALID_PARAM'));
-  Match.findById(+id, function(err, match){
+  Match.findById(id, function(err, match){
     if(err) return callback(new FrontendError('UNKNOWN'));
     if(match == undefined) return callback(new FrontendError('ENTITY_NOT_FOUND', {entity: texts.FR.MODELS.MATCH.NAME}));
     /* Check if the match is open for validation */

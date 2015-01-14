@@ -9,18 +9,15 @@ module.exports = {
   },
   
   /* Handle the post for creating a new match */
-  create: function(req, res) {
+  create: function(req, res, next) {
     Match.create(req.body, function(err, match) {
-      var messages = {
-        alert: err && err.message,
-        info: texts.build(texts.FR.SERVICES.CREATE.SUCCESS, {entity: texts.FR.MODELS.MATCH.NAME})
-      };
+      var message = texts.build(texts.FR.SERVICES.CREATE.SUCCESS, {entity: texts.FR.MODELS.MATCH.NAME});
 
       var destinations = {
-        failure: {style: 'redirect', path: 'new'},
+        failure: {path: 'new'},
         success: {style: 'redirect', path: '/admin'}
       };
-      handlerHelper.responseHandler(err, req, res, messages, destinations, match);
+      handlerHelper.responseHandler(err, req, res, next, destinations, message, match);
     });
   },
 
@@ -62,16 +59,14 @@ module.exports = {
   },
 
   /* Display all informations about a specific match */
-  show: function(req, res) {
+  show: function(req, res, next) {
     Match.find(req.params.id, function(err, match){
-      var messages = { alert: err && err.message };
-
       var destinations = {
-        failure: {style: 'redirect', path: '/admin'},
+        failure: {path: '/admin'},
         success: {style: 'render', path: 'admin/match/show'}
       };
 
-      handlerHelper.responseHandler(err, req, res, messages, destinations, match);
+      handlerHelper.responseHandler(err, req, res, next, destinations, match);
     });
   },
 

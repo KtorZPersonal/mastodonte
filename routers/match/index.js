@@ -2,6 +2,8 @@ var router = require('express').Router();
 var cUtils = require('../../middlewares/controllersUtils');
 var zombie = require('../../middlewares/zombie');
 var controllers = require('../../controllers');
+/* Do validation on params */
+router.param('id', cUtils.ensureParams.id('/match/home'));
 
 /* Routing on /match/... */
 router.get('/home', controllers.match.home);

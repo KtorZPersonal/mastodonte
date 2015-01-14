@@ -7,6 +7,7 @@ var languages = {
       ENTITIES_NOT_FOUND: "@entities recherché(e)s n'existe pas.",
       VALIDATION: "Au moins l'un des champs est invalide.",
       AUTHENTICATION: "Identifiant ou mot de passe invalide.",
+      NOT_AUTHENTICATED: "L'accès à cette section requiert une authentification."
     },
 
     VALIDATIONS: {

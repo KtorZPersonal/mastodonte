@@ -1,6 +1,8 @@
 var router = require('express').Router();
 var controllers = require('../../controllers');
 var cUtils = require('../../middlewares/controllersUtils');
+/* Do validation on params */
+router.param('id', cUtils.ensureParams.id('/admin'));
 
 /* Routing about /admin/match/...*/
 router.get('/new', controllers.admin.match.new);

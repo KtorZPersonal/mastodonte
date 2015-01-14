@@ -18,7 +18,7 @@ var eventPlugin = function(schema, options){
 
   /* Validate the name : string between 5 and 80 chars */
   schema.path('name').validate(function(value){
-    return value && value.lengtexts < 80 && value.lengtexts >= 5;
+    return value && value.length < 80 && value.length >= 5;
   }, texts.build(texts.FR.VALIDATIONS.BETWEEN, {field: texts.FR.MODELS.EVENT.FIELDS.NAME, inf: 5, sup: 80}));
 
   /* Validate the beginning date : after the current day date */
@@ -28,7 +28,7 @@ var eventPlugin = function(schema, options){
 
   /* Validate the ending date : after the beginning date */
   schema.path('ending').validate(function(value){
-    return !value || (value > textsis.beginning);
+    return !value || (value > this.beginning);
   }, texts.build(texts.FR.VALIDATIONS.INVALID, {field: texts.FR.MODELS.EVENT.FIELDS.ENDING}));
 
   /* Validate the max number of players : an int > 0*/
@@ -43,7 +43,7 @@ var eventPlugin = function(schema, options){
 
   /* Validate the maximum level required : an int between the min level and 100 */
   schema.path('maxLevel').validate(function(value){
-    return !value || (+value >= textsis.minLevel && +value <= 100 && +value % 1 == 0);
+    return !value || (+value >= this.minLevel && +value <= 100 && +value % 1 == 0);
   }, texts.build(
       texts.FR.VALIDATIONS.BETWEEN, {
         field: texts.FR.MODELS.EVENT.FIELDS.MAXLEVEL, 
