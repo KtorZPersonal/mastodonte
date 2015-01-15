@@ -2,6 +2,7 @@ doctype html
 html(lang="fr")
   head
     meta(charset="utf-8")
+    link(rel='stylesheet', href='/main.css')
     block title
       title Mastodonte
   body
@@ -11,7 +12,10 @@ html(lang="fr")
 
       -if(messages && messages.alert.length > 0)
         .message(class=['alert'])= '(-) ' + messages.alert[0]
-
+    block header
+      header
+        a(href='/match/home'): img(src='/logo.png' alt='Mastodonte, seul contre tous')
+        
     block content
     script(src='/jquery-1.11.2.min.js')
     block scripts

@@ -1,12 +1,46 @@
 extends ../layout
 block content
-  h1 Mastodonte, seul contre tous
+  .sub-header
+  section
+    h2 Matchs en cours
+    .widgets
+      each match in data.started
+        .matchWidget
+          h4 
+            a(href="/match/#{match.id}/show") #{match.name}
+          .fights
+            | 54 / 100
+          
+      .matchWidget
+        h4
+          | Un titre un peu plus long lkmjfg lkjgldkfjg
 
-  h2 Matchs en cours
-  each match in data.started
-    a(href="/match/#{match.id}/show")= match.name
+      .matchWidget
+        h4
+          | Un titre 
 
-  h2 Matchs à venir
-  each match in data.coming
-    p
-      a(href="/match/#{match.id}/show") #{match.name} (#{match.beginning.toUTCString()})
+      .matchWidget
+        h4
+          | Un titre un peu plus long lkmjfg lkjgldkfjg
+
+      .matchWidget
+        h4
+          | Un titre un peu plus long lkmjfg lkjgldkfjg
+
+      .matchWidget
+        h4
+          | Un titre un peu plus long lkmjfg lkjgldkfjg
+
+      .matchWidget
+        h4
+          | Un titre un peu plus long lkmjfg lkjgldkfjg
+
+      .matchWidget
+        h4
+          | Un titre un peu plus long lkmjfg lkjgldkfjg        
+
+  section
+    h2 Matchs à venir
+    each match in data.coming
+      p
+        a(href="/match/#{match.id}/show") #{match.name} (#{match.beginning.toUTCString()})

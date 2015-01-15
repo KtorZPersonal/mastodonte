@@ -7,10 +7,15 @@ var bodyParser = require('body-parser');
 var session = require('express-session');
 var flash = require('express-flash');
 var myPassport = require('./middlewares/passport');
+var stylus = require('stylus');
 
 /* Globally configure the app */
 app.set('view engine', 'jade');
 app.locals.pretty = true;
+app.use(stylus.middleware({
+  src: process.cwd() + '/stylesheets',
+  dest: process.cwd() + '/public/css'
+}));
 
 /* Call middlewares */
 app.use(session({secret: 'ItsAKindOfMagic', resave: false, saveUninitialized: true }));

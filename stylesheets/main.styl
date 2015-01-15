@@ -1,0 +1,61 @@
+@import url("http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800")
+
+bgColor = #21628c
+bgHeaderColor = #1E597F  
+linkColor = #01bad9 
+white = #ffffff
+fonts = "Open Sans", Helvetica, Arial
+
+html, body, table, tr, td, th, div, h1, h2, h3, h4, h5
+  padding 0
+  margin 0
+
+a, a:visited, a:hover
+  color linkColor 
+  text-decoration none
+
+a:hover
+  color white
+
+html
+  width 100%
+  height 100%
+  overflow-y scroll
+
+body
+  font 15px fonts
+  background bgColor
+  margin-top 50px
+  color white
+
+header
+  width 100%
+  height 50px
+  text-align center
+  font-size 30px
+  font-weight bold
+  background bgHeaderColor
+  position fixed
+  margin-top -50px
+
+.sub-header
+  height 250px
+  width 100%
+  padding 10px 0
+  background url('bgHeader.png') no-repeat center bgHeaderColor
+
+section
+  padding 15px 80px
+
+.matchWidget
+  margin 15px 5px
+  padding 10px 10px
+  width 180px
+  height 180px
+  border 1px solid linkColor
+  text-align center
+  display inline-block
+  vertical-align middle
+
+.widgets
+  text-align center

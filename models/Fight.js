@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 var autoIncrement = require('mongoose-auto-increment');
-var ModelError = require('./ModelError');
+var FrontendError = require('./FrontendError');
 var errorHelper = require('../helpers/errors');
 var texts = require('../helpers/texts');
 
@@ -32,15 +32,15 @@ var Fight = mongoose.model('Fight', fightSchema);
 
 /* Create a new fight and save it in the database*/
 var create = function(params, callback) {
-  Fight.create(params, err){
+  Fight.create(params, function(err, fight){
     errorHelper.format(err, texts.FR.MODELS.FIGHT.FIELDS, function(err){
       callback(err, match);
     });
-  };
+  });
 };
 
 
 
-var module.exports = {
+module.exports = {
   create: create,
 }
