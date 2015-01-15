@@ -25,8 +25,6 @@ fightSchema.plugin(autoIncrement.plugin, 'Fight');
 var Fight = mongoose.model('Fight', fightSchema);
 
 /* Indices for accessing data in the fight */
-Fight.LEFT = 0;
-Fight.RIGHT = 1;
 
 /* Validations TODO */
 
@@ -35,11 +33,13 @@ Fight.RIGHT = 1;
 /* Create a new fight and save it in the database*/
 var create = function(params, callback) {
   Fight.create(params, err){
-    errorHelper(err, texts.FR.MODELS.FIGHT.FIELDS, function(err){
+    errorHelper.format(err, texts.FR.MODELS.FIGHT.FIELDS, function(err){
       callback(err, match);
     });
   };
 };
+
+
 
 var module.exports = {
   create: create,

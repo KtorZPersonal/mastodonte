@@ -14,6 +14,9 @@ var locals = function(req){
   for (var p in data)
     if(data[p].datetype) data[p] = new Date(data[p].timestamp);
 
+  /* Add also param in querystring */
+  for(p in req.params) data[p] = req.params[p];
+
   /* Add errors if there is some */
   var errors = {};
   if (messages.alert.length > 0) {

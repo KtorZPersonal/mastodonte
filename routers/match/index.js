@@ -2,6 +2,7 @@ var router = require('express').Router();
 var cUtils = require('../../middlewares/controllersUtils');
 var zombie = require('../../middlewares/zombie');
 var controllers = require('../../controllers');
+
 /* Do validation on params */
 router.param('id', cUtils.ensureParams.id('/match/home'));
 
@@ -22,9 +23,8 @@ router.post('/:id/confirm',
   controllers.match.confirm
 );
 
-router.post('/:id/validate', 
+router.post('/:id/validate',
   zombie.parseFight, 
-  cUtils.retrieveUsers, 
   controllers.match.validate
 );
 

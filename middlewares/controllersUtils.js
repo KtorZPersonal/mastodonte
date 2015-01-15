@@ -1,4 +1,5 @@
 var FrontendError = require('../models/FrontendError');
+var User = require('../models/User');
 
 module.exports = {
   /* Middleware called before any other middleware during the routing process. 
@@ -66,7 +67,17 @@ module.exports = {
     }
   },
 
+  /* Populate users of a fight from their username */
   retrieveUsers: function(req, res, next) {
-    next();
+    if(!req.cData.fight) return next();
+    User.findByUsername(req.cData.fight.players.left, function(err, user){
+      if(err) return next(err.to('/error'));
+      req.cData.fight.players.left = user;
+      User.findByUsername(req.cData.fight.players.right, function(err, user){
+        if(err) return next(err.to('/error'));
+        req.cData.fight.players.right = user;
+        next();
+      });
+    });
   },
 };

@@ -1,5 +1,6 @@
 var cheerio = require('cheerio');
 var zombie = require('request').defaults({jar: true});
+var FrontendError = require('../models/FrontendError');
 var cp = require('./connectParams');
 
 /* Open a session with a zombie account */
@@ -10,31 +11,32 @@ var connect = function(req, res, next){
       mail: cp.mail,
       passe: cp.password,
       connexion: "1"},
-  }, function(err, response, body){
-    req.cData.connected = true;
-    next();
+  }, function(err){
+    req.cData.connected = err == null;
+    next(err ? new FrontendError('UNKNOWN', '/error', err) : null);
   });
 };
 
 /* Extract data about a player, supposed that req contains a string param 'playerID' */
 var information = function(req, res, next){
-  req.cData.information = {};
-  if(!req.cData.connected) next();
-
+  if(!req.cData.connected) return next(new FrontendError('UNKNOWN', '/error'));
   zombie.get({
     url:  cp.host,
     qs: {
       page: "ficheMembre",
       mec: req.body.username},
     }, function(err, response, body){
+      if(err) return next(new FrontendError('UNKNOWN', '/error', err));
+
       var $ = cheerio.load(body);
       /* Extraire l'identifiant du joueur */ 
       var id = $('a[href^="/index.php?page=ficheMembre"]')
         .attr('href')
         .match(/=([0-9]+)$/);
-      req.cData.information.id = id && +id[1];
 
-      /* Extraire l'avatar du joueur */
+      /* Extract avatar and id */
+      req.cData.information = {};
+      req.cData.information.id = id && +id[1];
       req.cData.information.avatar = $('.avatarimage').children('img').attr('src');
 
       next();
@@ -43,14 +45,15 @@ var information = function(req, res, next){
 
 /* Check for a particular email in the mailbox */
 var checkMails = function(req, res, next){
-  if(!req.cData.connected || !req.cData.user) return next();
+  if(!req.cData.connected || !req.session.verificationKey) return next(new FrontendError('UNKNOWN', '/error'));
   zombie.post({
     url: cp.host + "/index.php?page=messagerie&box=received",
     form: {
-      'rech[BOURRIN]': "1",
+      //'rech[BOURRIN]': "1", //Force only new mails
       'rech[RECHGARS]': req.body.username}
     }, function(err, response, body){
-      req.cData.keyFound = body.match(new RegExp(req.cData.user.verificationKeys[req.params.id])) != null;
+      if(err) return next(new FrontendError('UNKNOWN', '/error', err));
+      req.cData.keyFound = body.match(new RegExp(req.session.verificationKey)) != null;
       next();
   });
 };
@@ -67,14 +70,24 @@ var parseFight = function(req, res, next){
 
     var $ = cheerio.load(body);
 
+    /* Once we have a fight, no error should happends now */
     var fight = {
       players: {
         left: $('.fleft > h3').first().text(),
         right: $('.fright > h3').first().text()
       },
       characters: {
-        left: $('.fleft .iconeperso').first().attr('src'),
-        right: $('.fright .iconeperso').first().attr('src')
+        left: {
+          avatar: $('.fleft .iconeperso').first().attr('src'),
+          name: $('#resultats td > em').first().text().split(' Niveau ')[0].trim(),
+          level: +$('#resultats td > em').first().text().split(' Niveau ')[1]
+
+        },
+        right: {
+          avatar: $('.fright .iconeperso').first().attr('src'),
+          name: $('#resultats td[align="right"] > em').first().text().split(' Niveau ')[0].trim(),
+          level: +$('#resultats td[align="right"] > em').first().text().split(' Niveau ')[1]
+        }
       },
       background: $('.scenecombat').attr('style').match(/url\((.*)\)/)[1],
       rounds: []

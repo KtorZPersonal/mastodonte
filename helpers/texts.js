@@ -7,7 +7,12 @@ var languages = {
       ENTITIES_NOT_FOUND: "@entities recherché(e)s n'existe pas.",
       VALIDATION: "Au moins l'un des champs est invalide.",
       AUTHENTICATION: "Identifiant ou mot de passe invalide.",
-      NOT_AUTHENTICATED: "L'accès à cette section requiert une authentification."
+      NOT_AUTHENTICATED: "L'accès à cette section requiert une authentification.",
+      ALREADY_REGISTERED: "Vous êtes déjà inscrit(e) à cet événement",
+      IDENTITY_VERIFICATION: "La vérification de l'identité a échoué.",
+      CONSTRAINT_VIOLATED: "Ce combat enfreint des contraintes relatives à l'événement.",
+      USER_NOT_REGISTERED: "Au moins l'un des deux joueurs ne participe pas à l'événement.",
+      INVALID_ENTITY: "@entity auquel/à laquelle vous faites référence est invalide."
     },
 
     VALIDATIONS: {
@@ -76,11 +81,7 @@ var languages = {
         SUCCESS: "@entity mis(e) à jour avec succès."
       },
       REGISTRATION: {
-        SUCCESS: "Inscription effectuée avec succès !",
-        FAILURE: "Vous êtes déjà inscrit(e) à cet événement."
-      },
-      IDENTITY_VERIFICATION: {
-        FAILURE: "La vérification de l'identité a échoué."
+        SUCCESS: "Inscription effectuée avec succès !"
       },
       VALIDATE: {
         FAILURE: "La validation du combat a échoué."

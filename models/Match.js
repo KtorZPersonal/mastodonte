@@ -27,21 +27,43 @@ matchSchema.methods.isStarted = function() {
 
 /* Is a match ended (thus, is it possible to validate fight ?) */
 matchSchema.methods.isEnded = function() {
-  return this.nbFights <= 0;
+  return this.nbFights <= 0 || this.ending && this.ending.getTime() <= Date.now();
 };
 
 /* Does a character respects the constraints */
-matchSchema.method.validsConstraints = function(character){
+matchSchema.methods.validsConstraints = function(character){
   return character.level <= this.maxLevel && character.level >= this.minLevel;
 };
+
+/* Does a player participate to the match */
+matchSchema.methods.hasPlayer = function(playerId) {
+  var hasPlayer = false;
+  this.players.forEach(function(player){
+    hasPlayer = hasPlayer || player._id == playerId;
+  });
+  return hasPlayer;
+};
+
+/* Before a suppression, unregister all users */
+matchSchema.pre('remove', function(next) {
+  console.log("lel");
+  this.model('User').update(
+    {'_id': {'$in': this.players}}, 
+    {'$pull': {verifiedEvents: this._id}}, 
+    {multi: true}, 
+    next
+  );
+});
 
 /* Match's behaviors */
 var Match = mongoose.model('Match', matchSchema);
 
 /* Retrieve all active matches. i.e. All matches that are not already ended */
 var findAllActive = function(callback){
-  Match.where('nbFights').gt(0).exec(function(err, matches){
-    if(err) return callback(new FrontendError('UNKNOWN'));
+  var noEnding = {nbFights: {'$gt': 0}, ending: {'$exists': false}};
+  var withEnding = {nbFights: {'$gt': 0}, ending: {'$gt': new Date()}};
+  Match.find().or([noEnding, withEnding]).exec(function(err, matches){
+    if(err) return callback(new FrontendError('UNKNOWN', err));
     callback(null, matches);
   });
 };
@@ -59,8 +81,8 @@ var create = function(params, callback){
 
 /* Retrieve a match from the database */
 var find = function(id, callback){
-  Match.findOne({_id: +id}).populate('players').exec(function(err, match) {
-    if(err) return callback(new FrontendError('UNKNOWN'));
+  Match.findOne({_id: id}).populate('players').exec(function(err, match) {
+    if(err) return callback(new FrontendError('UNKNOWN', err));
     if(match == undefined) return callback(new FrontendError('ENTITY_NOT_FOUND', {entity: texts.FR.MODELS.MATCH.NAME}));
     callback(null, match);
   });
@@ -68,8 +90,8 @@ var find = function(id, callback){
 
 /* Delete a previously created event */
 var remove = function(id, callback){
-  Match.remove({_id: +id}).exec(function(err) {
-    if(err) return callback(new FrontendError('UNKNOWN'));
+  Match.remove({_id: id}).exec(function(err) {
+    if(err) return callback(new FrontendError('UNKNOWN', err));
     callback();
   });
 };
@@ -87,7 +109,7 @@ var update = function(id, params, callback){
     });
     
     match.save(function(err){
-      errorHelper(err, texts.FR.MODELS.MATCH.FIELDS, function(err){
+      errorHelper.format(err, texts.FR.MODELS.MATCH.FIELDS, function(err){
         callback(err, match);
       })
     });
@@ -96,13 +118,13 @@ var update = function(id, params, callback){
 
 /* Register a user as a participant */
 var register = function(matchId, userId, callback) {
-  Match.findOne({_id: +matchId}).exec(function(err, match){
+  Match.findOne({_id: matchId}).exec(function(err, match){
     if(err) return callback(new FrontendError('UNKNOWN'));
     if(match == undefined) return callback(new FrontendError('ENTITY_NOT_FOUND', {entity: texts.FR.MODELS.MATCH.NAME}));
     //if(match.players.contains(userId)) return callback(new FrontendError('INVALID_PARAM'));
-    match.players.push(+userId);
+    match.players.push(userId);
     match.save(function(err){
-      errorHelper(err, texts.FR.MODELS.MATCH.FIELDS, function(err){
+      errorHelper.format(err, texts.FR.MODELS.MATCH.FIELDS, function(err){
         callback(err, match);
       })
     });
@@ -112,15 +134,18 @@ var register = function(matchId, userId, callback) {
 /* Validate a fight */
 var validateFight = function(id, fight, callback){
   Match.findById(id, function(err, match){
-    if(err) return callback(new FrontendError('UNKNOWN'));
+    console.log(match);
+
+    if(err) return callback(new FrontendError('UNKNOWN', err));
     if(match == undefined) return callback(new FrontendError('ENTITY_NOT_FOUND', {entity: texts.FR.MODELS.MATCH.NAME}));
     /* Check if the match is open for validation */
-    if(!match.isStarted || match.isEnded) return callback(new FrontendError('NOT_A_VALID_MATCH'));
+    if(!match.isStarted() || match.isEnded()) 
+      return callback(new FrontendError('INVALID_ENTITY', {entity: texts.FR.MODELS.MATCH.NAME}));
     /* Check if users are registered for the match */
-    if(!fight.players.left.isRegisteredFor(id) || !fight.players.right.isRegisteredFor(id))
+    if(!match.hasPlayer(fight.players.left) || !match.hasPlayer(fight.players.right))
       return callback(new FrontendError('USER_NOT_REGISTERED'));
     /* Check if characters respects match's constraints */
-    if(!match.validConstraints(fight.characters.left) || !match.validConstraints(fight.characters.right))
+    if(!match.validsConstraints(fight.characters.left) || !match.validsConstraints(fight.characters.right))
       return callback(new FrontendError('CONSTRAINT_VIOLATED'));
 
     callback(null, match);

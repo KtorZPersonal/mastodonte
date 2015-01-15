@@ -6,8 +6,8 @@ var eventPlugin = function(schema, options){
     name:       {type: String,    required: true}, 
     beginning:  {type: Date,      required: true},
     ending:     Date,
-    fights:     [{type: Number,  ref: 'Fight'}],
-    players:    [{type: Number,  ref: 'User'}],
+    fights:     [{type: Number,   ref: 'Fight'}],
+    players:    [{type: Number,   ref: 'User'}],
     maxPlayers: {type: Number,    default: 100},
     minLevel:   {type: Number,    default: 1},
     maxLevel:   {type: Number,    default: 100}

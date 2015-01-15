@@ -11,10 +11,7 @@ var userSchema = new mongoose.Schema({
   id2f: {type: Number, required: true},
   type: {type: String, required: true},
   avatar: {type: String, required: true},
-  /* Change the ref between different events */
   verifiedEvents: [{type: Number, ref: 'Match'}],
-  /* An object that associate an event id to a secret validation key */
-  verificationKeys: {type: mongoose.Schema.Types.Mixed},
   password: {type: String}
 });
 userSchema.plugin(autoIncrement.plugin, 'User');
@@ -63,7 +60,7 @@ var User = mongoose.model('User', userSchema);
 var create = function(params, callback){
   User.create(params, function(err, user){
     /* Required Error Helper is used to translate the error message of missing fields */
-    errorHelper(err, texts.FR.MODELS.USER.FIELDS, function(err){
+    errorHelper.format(err, texts.FR.MODELS.USER.FIELDS, function(err){
       callback(err, user);
     });
   });
@@ -91,7 +88,9 @@ var findByUsername = function(username, callback){
 var update = function(id, params, callback){
   /* Can't call directly user.save.... Why ? Mongoose ? Didn't find the answer yet */
   User.findById(id, function(err, user){ 
-    for(p in user.schema.paths) user[p] = params[p];
+    userSchema.eachPath(function(path){
+      if (!/^_/.test(path)) user[path] = params[path];
+    });
     user.save(function(err){
       errorHelper.format(err, texts.FR.MODELS.USER.FIELDS, function(err){
         callback(err, user);
@@ -101,23 +100,29 @@ var update = function(id, params, callback){
 };
 
 /* Register a user for a match */
-var register = function(userParams, matchId, key, callback){
-  userParams.verificationKeys[matchId] = key;
-  if(userParams.id) {
-    /* The user exist, but is not registered on this match */
-    //TODO check if already registered
-    update(userParams.id, userParams, callback);
-  } else {
-    /* The user doesn't exist yet, let's create it */
-    create(userParams, callback);
-  }
+var register = function(userParams, matchId, callback){
+  findByUsername(userParams.username, function(err, user){
+    if(err && err.type != 'ENTITY_NOT_FOUND') return callback(err);
+    if(err) {
+      /* User don't exist */
+      userParams.verifiedEvents = [matchId];
+      create(userParams, callback);
+    } else {
+      /* It exists, just update him */
+      if(user.isRegisteredFor(matchId)) return callback(new FrontendError('ALREADY_REGISTERED'));
+      user.verifiedEvents.push(matchId);
+      user.avatar = userParams.avatar;
+      update(user.id, user, callback);
+    }
+
+  });
 };
 
 /* Generate a key for validate a registration */
 var genValidationKey = function(){
   var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split('');
   var key = "";
-  for(var i = 0; i < 28; i++) key += chars[Matexts.floor(Matexts.random()*62)];
+  for(var i = 0; i < 28; i++) key += chars[Math.floor(Math.random()*62)];
   return "g5L3yRpXAAaNJklgK4Qy939ZjYX3"; // temp
   return key;
 };
@@ -127,7 +132,6 @@ var createShape = function(username, id2f, avatar){
     username: username,
     id2f: id2f,
     avatar: avatar,
-    verificationKeys: {},
     type: User.TYPES.PLAYER
   };
 };
