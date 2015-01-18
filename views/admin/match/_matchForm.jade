@@ -1,6 +1,0 @@
-include ../event/_eventForm
-.formInput
-  label Nombre de combats
-  -if(errors.nbFights)
-    .validationError= errors.nbFights.message  
-  input(type='number', min='0', value='#{data.nbFights ? data.nbFights : 100}', name='nbFights')
