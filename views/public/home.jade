@@ -1,46 +1,26 @@
 extends ../layout
 block content
-  .sub-header
   section
-    h2 Matchs en cours
-    .widgets
-      each match in data.started
-        .matchWidget
-          h4 
-            a(href="/match/#{match.id}/show") #{match.name}
-          .fights
-            | 54 / 100
-          
-      .matchWidget
-        h4
-          | Un titre un peu plus long lkmjfg lkjgldkfjg
+    .wrapper
+      .widgets
+        each match in data.started
+          .matchWidget
+            .header
+              a(href="/match/#{match.id}/show") #{match.name}
+            .fights
+              .counter
+                =match.fights.length
+                span(class="colorize")  / #{match.nbFights}
+              =match.fights.length > 1 ? "combats disputés" : "combat disputé"
+            .cashprize #{match.cashprize} zénis
 
-      .matchWidget
-        h4
-          | Un titre 
-
-      .matchWidget
-        h4
-          | Un titre un peu plus long lkmjfg lkjgldkfjg
-
-      .matchWidget
-        h4
-          | Un titre un peu plus long lkmjfg lkjgldkfjg
-
-      .matchWidget
-        h4
-          | Un titre un peu plus long lkmjfg lkjgldkfjg
-
-      .matchWidget
-        h4
-          | Un titre un peu plus long lkmjfg lkjgldkfjg
-
-      .matchWidget
-        h4
-          | Un titre un peu plus long lkmjfg lkjgldkfjg        
-
-  section
-    h2 Matchs à venir
-    each match in data.coming
-      p
-        a(href="/match/#{match.id}/show") #{match.name} (#{match.beginning.toUTCString()})
+        each match in data.coming
+            .matchWidget(class="coming")
+              .header
+                a(href="/match/#{match.id}/show") #{match.name}
+              .fights
+                .counter
+                  span(class="colorize")= match.players.length
+                  |  / #{match.maxPlayers}
+                =match.players.length > 1 ? "participants" : "participant"
+              .cashprize #{match.cashprize} zénis

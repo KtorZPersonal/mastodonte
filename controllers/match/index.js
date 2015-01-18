@@ -51,15 +51,18 @@ module.exports = {
     if(!req.cData.information.id) return next(new FrontendError('ENTITY_NOT_FOUND', {entity: texts.FR.MODELS.USER.NAME}, 
       destinations.failure.path));
 
-    /* We will ask the user to send a specific key by mail to validate him */
-    req.session.userShape = User.createShape(req.body.username, req.cData.information.id, req.cData.information.avatar);
-    req.session.verificationKey = User.genValidationKey();
+    Match.find(req.params.id, function(err, match){
+      /* We will ask the user to send a specific key by mail to validate him */
+      req.session.userShape = User.createShape(req.body.username, req.cData.information.id, req.cData.information.avatar);
+      req.session.verificationKey = User.genValidationKey();
 
-    var locals = handlerHelper.locals(req);
-    locals.data.user = req.session.userShape;
-    locals.data.verificationKey = req.session.verificationKey;
+      var data = {};
+      data.user = req.session.userShape;
+      data.verificationKey = req.session.verificationKey;
+      data.match = match;
 
-    res.render(destinations.success.path, locals);
+      handlerHelper.responseHandler(err, req, res, next, destinations, data);
+    });
   },
 
   /* Validate a user subscription to a match */

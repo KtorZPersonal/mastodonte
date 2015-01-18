@@ -32,6 +32,7 @@ app.use(express.static(process.cwd() + '/public/libs/'));
 app.use(express.static(process.cwd() + '/public/javascript/'));
 app.use(express.static(process.cwd() + '/public/css/'));
 app.use(express.static(process.cwd() + '/public/img/'));
+app.use(express.static(process.cwd() + '/public/fonts/'));
 app.use(require('./middlewares/errorHandler'));
 
 /* Wait for requests on port 3000 */

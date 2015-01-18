@@ -1,4 +1,4 @@
-@import url("http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800");
+@import url("http//fonts.googleapis.com/css?family=Open+Sans400,300,600,700,800");
 html,
 body,
 table,
@@ -14,9 +14,17 @@ h5 {
   padding: 0;
   margin: 0;
 }
+h1,
+h2,
+h3,
+h4,
+h5 {
+  width: 100%;
+  text-align: center;
+}
 a,
-a:visited,
-a:hover {
+avisited,
+ahover {
   color: #01bad9;
   text-decoration: none;
 }
@@ -30,9 +38,20 @@ html {
 }
 body {
   font: 15px "Open Sans", Helvetica, Arial;
-  background: #21628c;
+  background: #444;
   margin-top: 50px;
   color: #fff;
+}
+input {
+  border-radius: 0;
+  border: 1px solid #555;
+  background: #333;
+  padding: 2px 5px;
+}
+.wrapper {
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
 }
 header {
   width: 100%;
@@ -42,27 +61,215 @@ header {
   font-weight: bold;
   background: #1e597f;
   position: fixed;
-  margin-top: -50px;
+  top: 0;
+  vertical-align: middle;
+  z-index: 1000;
+}
+header .logo,
+header .catchphrase {
+  display: inline-block;
+  float: left;
+  margin: 0;
+}
+header .catchphrase {
+  float: right;
+}
+footer {
+  width: 100%;
+  height: 300px;
+  background: #333;
+  text-align: center;
+  color: #555;
+  padding: 20px 0;
+}
+.clearfix {
+  overflow: auto;
+  zoom: 1;
 }
 .sub-header {
-  height: 250px;
+  height: 280px;
   width: 100%;
-  padding: 10px 0;
   background: url("bgHeader.png") no-repeat center #1e597f;
 }
 section {
   padding: 15px 80px;
+  min-height: 500px;
 }
-.matchWidget {
+span.colorize {
+  color: #01bad9;
+}
+.widgets {
+  text-align: center;
+}
+.widgets .matchWidget {
+  border-top: 3px solid #01bad9;
   margin: 15px 5px;
   padding: 10px 10px;
   width: 180px;
   height: 180px;
-  border: 1px solid #01bad9;
-  text-align: center;
+  background: #333;
   display: inline-block;
   vertical-align: middle;
 }
-.widgets {
+.widgets .matchWidget .header {
+  height: 50px;
+  overflow: hidden;
+  display: block;
+  vertical-align: middle;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+.widgets .matchWidget .fights {
+  padding: 10px 0;
+  height: 90px;
+  font-size: 1.4em;
+  overflow: hidden;
+}
+.widgets .matchWidget .fights .counter {
+  font-size: 1.4em;
+  overflow: hidden;
+}
+.widgets .matchWidget .cashprize {
+  height: 10px;
+  color: #01bad9;
+  font-weight: 800;
+}
+.widgets .coming {
+  border-top: 3px solid #555;
+}
+.widgets .coming .header a {
+  color: #555;
+}
+.widgets .coming .header a:hover {
+  color: #fff;
+}
+.eventBox {
+  width: 520px;
+}
+.eventDetails,
+.eventParticipants {
+  height: 300px;
+  padding: 5px 15px;
+  margin: 15px 0;
+  display: inline-block;
+  background: #333;
+  vertical-align: middle;
+}
+.eventDetails table,
+.participantsList table {
+  width: 90%;
+  margin: 15px auto;
+}
+.participantsList table {
+  margin: 0 auto;
+}
+.eventDetails table tr > td {
+  padding: 7px 0;
+}
+.eventDetails table tr > td:first-child {
+  text-align: left;
+}
+.participantsList table tr > td:first-child {
+  width: 200px;
+}
+.participantsList table tr > td:last-child {
   text-align: center;
+}
+.eventDetails table tr > td:last-child {
+  text-align: right;
+}
+.event {
+  text-align: center;
+}
+span.detail {
+  font-weight: bold;
+  color: #01bad9;
+}
+.participantsList {
+  height: 220px;
+  margin: 15px 0;
+}
+.participant {
+  width: 100%;
+  text-align: center;
+}
+.participantsList .viewport {
+  height: 240px;
+  overflow: hidden;
+  position: relative;
+}
+.participantsList .overview {
+  width: 100%;
+  list-style: none;
+  position: absolute;
+  left: 0 top 0;
+  padding: 0;
+  margin: 0;
+}
+.participantsList .scrollbar {
+  background: transparent url("bg-scrollbar-track-y.png") no-repeat 0 0;
+  position: relative;
+  background-position: 0 0;
+  float: right;
+  width: 15px;
+}
+.participantsList .track {
+  background: transparent url("bg-scrollbar-trackend-y.png");
+  no-repeat: 0 100%;
+  height: 100%;
+width13px
+  position: relative;
+  padding: 0 1px;
+}
+.participantsList .thumb {
+  background: transparent url("bg-scrollbar-thumb-y.png") no-repeat 50% 100%;
+  height: 20px;
+  width: 25px;
+  cursor: pointer;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: -5px;
+}
+.participantsList .thumb .end {
+  background: transparent url("bg-scrollbar-thumb-y.png") no-repeat 50% 0;
+  overflow: hidden;
+  height: 5px;
+  width: 25px;
+}
+.participantsList .disable {
+  display: none;
+}
+.eventForm {
+  text-align: center;
+}
+.eventForm input {
+  margin: 10px 0;
+}
+.back {
+  width: 100%;
+  text-align: right;
+}
+.myAlert {
+  position: absolute;
+  top: 0;
+  z-index: 10000;
+  width: 100%;
+  text-align: center;
+}
+span.alert-icon {
+  margin: 0 10px;
+}
+.text-center {
+  text-align: center;
+}
+.verificationKey {
+  width: 50%;
+  margin: 40px auto;
+  padding: 10px 0;
+  background: #333;
+  border: 1px solid #555;
+  color: #01bad9;
+  font-weight: bold;
+  font-size: 1.5em;
 }

@@ -10,7 +10,8 @@ var eventPlugin = function(schema, options){
     players:    [{type: Number,   ref: 'User'}],
     maxPlayers: {type: Number,    default: 100},
     minLevel:   {type: Number,    default: 1},
-    maxLevel:   {type: Number,    default: 100}
+    maxLevel:   {type: Number,    default: 100},
+    cashprize:   {type: Number,    default: 0}
   });
 
   /* Event's Validations */
@@ -49,6 +50,17 @@ var eventPlugin = function(schema, options){
         field: texts.FR.MODELS.EVENT.FIELDS.MAXLEVEL, 
         inf: texts.FR.MODELS.EVENT.FIELDS.MINLEVEL, 
         sup: 100
+      }
+    )
+  );
+
+  /* Validate the cashprize : a positive integer */
+  schema.path('cashprize').validate(function(value){
+    return !value || +value >= 0;
+  }, texts.build(
+      texts.FR.VALIDATIONS.SUP, {
+        field: texts.FR.MODELS.EVENT.FIELDS.CASHPRIZE,
+        inf: 0
       }
     )
   );

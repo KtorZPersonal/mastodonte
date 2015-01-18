@@ -1,21 +1,100 @@
-h2= data.name
-.eventInfo(class=['matchInfo'])
-  .date Date de lancement 
-    =data.beginning
-  .date Date de fin 
-    =data.ending
-  .number Participant max 
-    =data.maxPlayers
-  .number Level minimum 
-    =data.minLevel
-  .number Level maximum 
-    =data.maxLevel
-  .number Nombre de combats 
-    =data.nbFights
+.event
+  h2= data.name
+  .eventDetails(class=['matchDetails eventBox'])
+    h3 Détails sur l'événement
+    table
+      tr
+        td
+          span(class=['glyphicon glyphicon-time'])
+          |  Date de lancement
+        td 
+          span(class='detail')= data.beginning.toPrettyDisplay()
 
-br
-br
-h2 Participants 
-each participant in data.players
-  .user
-    =participant.username
+      tr
+        td
+          span(class=['glyphicon glyphicon-time'])
+          |  Date de fin
+        td
+          span(class='detail')
+            -if(data.ending)
+              = data.ending.toPrettyDisplay()
+            -else
+              | -
+      tr
+        td
+          span(class=['glyphicon glyphicon-arrow-up'])
+          |  Niveau minimal requis
+        td 
+          span(class='detail')= data.minLevel
+
+      tr
+        td
+          span(class=['glyphicon glyphicon-arrow-down'])
+          |  Niveau maximal requis
+        td
+          span(class='detail')= data.maxLevel
+
+      tr
+        td
+          span(class=['glyphicon glyphicon-user'])
+          |  Nombre de participants maximal
+        td
+          span(class='detail')= data.maxPlayers
+
+      tr
+        td
+          span(class=['glyphicon glyphicon-resize-small'])
+          |  Nombre de combats à effectuer
+        td
+          span(class='detail')= data.nbFights
+
+      tr
+        td
+          span(class=['glyphicon glyphicon-usd'])
+          |  Récompense
+        td
+          span(class='detail') #{data.cashprize} zénis
+
+  .eventParticipants(class='eventBox')
+    h3 Participants 
+    .participantsList
+      .scrollbar: .track: .thumb: .end
+      .viewport
+        .overview
+          table
+            tr
+              td: img(src="http://2fight.com/upload/1404031783.png") 
+              td Zell Dintch
+            tr
+              td: img(src="http://2fight.com/upload/1404031783.png") 
+              td Zell Dintch And his suffix too long that it goes out of the box
+            tr
+              td: img(src="http://2fight.com/upload/1404031783.png") 
+              td Zell Dintch
+            tr
+              td: img(src="http://2fight.com/upload/1404031783.png") 
+              td Zell Dintch
+            tr
+              td: img(src="http://2fight.com/upload/1404031783.png") 
+              td Zell Dintch
+            tr
+              td: img(src="http://2fight.com/upload/1404031783.png") 
+              td Zell Dintch
+            tr
+              td: img(src="http://2fight.com/upload/1404031783.png") 
+              td Zell Dintch
+            tr
+              td: img(src="http://2fight.com/upload/1404031783.png") 
+              td Zell Dintch
+            tr
+              td: img(src="http://2fight.com/upload/1404031783.png") 
+              td Zell Dintch
+            tr
+              td: img(src="http://2fight.com/upload/1404031783.png") 
+              td Zell Dintch
+            tr
+              td: img(src="http://2fight.com/upload/1404031783.png") 
+              td Zell Dintch
+            tr
+              td: img(src="http://2fight.com/upload/1404031783.png") 
+              td Zell Dintch

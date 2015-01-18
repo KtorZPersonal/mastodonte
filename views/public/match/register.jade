@@ -1,17 +1,25 @@
 extends ../../layout
 block content
-  h1 Mastodonte, seul contre tous
-  
-  p.
-    Votre inscription est presque compléte. Afin de s'assurer que vous être bien le détenteur
-    du compte #{data.user.username}, merci de bien vouloir envoyer un message privé au joueur
-    Mastodonte sur 2fight, avec comme objet, la clé de validation ci-dessous :
-  br
-  p= data.verificationKey
-  br
-  br
-  p Une fois le message envoyé, cliquez sur le bouton ci-après pour finaliser votre inscription. 
+  section
+    .wrapper(class="text-center")
+      h2= data.match.name
+      br
+      img(src='http://2fight.com/#{data.user.avatar}')
+      p Votre inscription est presque compléte. Afin de s'assurer que vous être bien le détenteur du compte 
+        span(class="colorize")=  data.user.username
+        br 
+        |  merci de bien vouloir envoyer un message privé au joueur 
+        span(class="colorize") Mastodonte 
+        |  sur 2fight, avec comme objet, la clé de validation ci-dessous :
 
-  form(action="/match/#{data.id}/confirm", method="post")
-    input(type="hidden", value="#{data.user.username}" name="username")
-    input(type="submit", value="C'est bon, c'est envoyé !")
+      .verificationKey
+        = data.verificationKey
+
+      p Une fois le message envoyé, cliquez sur le bouton ci-après pour finaliser votre inscription. 
+
+      br
+      br
+      br
+      form(action="/match/#{data.match.id}/confirm", method="post", class="eventForm")
+        input(type="hidden", value="#{data.user.username}" name="username")
+        input(type="submit", value="C'est bon, c'est envoyé !", class="btn btn-success")

@@ -72,6 +72,22 @@ var responseHandler = function(err, req, res, next, destinations, successMessage
     /* For a rendering, add data passed by models and/or controller */
     var _locals = locals(req);
     if(data) _locals.data = data;
+    for(p in _locals.data) {
+      if(_locals.data[p] instanceof Date) {
+        _locals.data[p].toPrettyDisplay = function(){
+          var fillZero = function(number) {
+            return +number >= 10 ? number : "0" + number; 
+          }
+
+          var day = fillZero(this.getDate());
+          var month = fillZero(this.getMonth() + 1);
+          var year = this.getFullYear();
+          var minutes = fillZero(this.getMinutes());
+          var hours = fillZero(this.getHours());
+          return day + "/" + month + "/" + year + " " + hours + ":" + minutes
+        };
+      }
+    }
     res.render(destinations.success.path, _locals);
   }
 };

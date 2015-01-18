@@ -52,3 +52,10 @@
     .validationError= errors.maxLevel.message
   input(type='checkbox', class=['triggerInput'], trigger-target='maxLevel', name='optionMaxLevel', checked=data.maxLevel == undefined ? false : true)
   input(type='number', min='0', max='100', value="#{data.maxLevel ? data.maxLevel : 100}", trigger-name='maxLevel', name='maxLevel')
+
+.formInput
+  label Récompense
+  -if(errors.cashprize)
+    .validationError= errors.cashprize.message
+  input(type='checkbox', class=['triggerInput'], trigger-target='cashprize', name='optionCashPrize', checked=data.cashprize == undefined ? false : true)
+  input(type='number', min='0', value="#{data.cashprize ? data.cashprize : 100}", trigger-name='cashprize', name='cashprize')

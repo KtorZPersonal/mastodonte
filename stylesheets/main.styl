@@ -1,16 +1,25 @@
-@import url("http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800")
+@import url("http//fonts.googleapis.com/css?family=Open+Sans400,300,600,700,800")
 
-bgColor = #21628c
+bgColor = #444
 bgHeaderColor = #1E597F  
 linkColor = #01bad9 
+widgetColor = #333 
+widgetColorComing = #555 
 white = #ffffff
 fonts = "Open Sans", Helvetica, Arial
+
+wrapperWidth = 1080px
+eventBoxWidth = 500px
 
 html, body, table, tr, td, th, div, h1, h2, h3, h4, h5
   padding 0
   margin 0
 
-a, a:visited, a:hover
+h1, h2, h3, h4, h5
+  width 100%
+  text-align center
+
+a, avisited, ahover
   color linkColor 
   text-decoration none
 
@@ -28,6 +37,17 @@ body
   margin-top 50px
   color white
 
+input
+  border-radius 0
+  border 1px solid widgetColorComing
+  background widgetColor
+  padding 2px 5px
+
+.wrapper
+  width 100%
+  max-width wrapperWidth
+  margin 0 auto
+
 header
   width 100%
   height 50px
@@ -36,26 +56,210 @@ header
   font-weight bold
   background bgHeaderColor
   position fixed
-  margin-top -50px
+  top 0
+  vertical-align middle
+  z-index 1000
+
+  .logo, .catchphrase
+    display inline-block
+    float left
+    margin 0
+
+  .catchphrase
+    float right
+
+footer
+  width 100%
+  height 300px
+  background widgetColor
+  text-align center
+  color widgetColorComing
+  padding 20px 0
+
+.clearfix
+  overflow auto
+  zoom 1
 
 .sub-header
-  height 250px
+  height 280px
   width 100%
-  padding 10px 0
   background url('bgHeader.png') no-repeat center bgHeaderColor
 
 section
   padding 15px 80px
+  min-height 500px
 
-.matchWidget
-  margin 15px 5px
-  padding 10px 10px
-  width 180px
-  height 180px
-  border 1px solid linkColor
-  text-align center
-  display inline-block
-  vertical-align middle
+span.colorize
+  color linkColor
 
 .widgets
   text-align center
+
+  .matchWidget
+    border-top 3px solid linkColor
+    margin 15px 5px
+    padding 10px 10px
+    width 180px
+    height 180px
+    background widgetColor
+    display inline-block
+    vertical-align middle
+
+    .header
+      height 50px
+      overflow hidden
+      display block
+      vertical-align middle
+      font-size 1.2em
+      font-weight bold
+
+    .fights
+      padding 10px 0
+      height 90px
+      font-size 1.4em
+      overflow hidden
+
+      .counter
+        font-size 1.4em
+        overflow hidden
+
+    .cashprize
+      height 10px
+      color linkColor
+      font-weight 800
+
+  .coming
+    border-top 3px solid widgetColorComing
+
+    .header a
+      color widgetColorComing
+
+    .header a:hover
+      color white
+
+.eventBox
+  width 520px
+
+.eventDetails, .eventParticipants
+  height 300px
+  padding 5px 15px
+  margin 15px 0
+  display inline-block
+  background widgetColor
+  vertical-align middle
+
+.eventDetails table, .participantsList table
+  width 90%
+  margin 15px auto
+
+.participantsList table
+  margin 0 auto
+
+.eventDetails table tr > td
+  padding 7px 0
+
+.eventDetails table tr > td:first-child
+  text-align left
+
+.participantsList table tr > td:first-child
+  width 200px
+
+.participantsList table tr > td:last-child
+  text-align center
+
+.eventDetails table tr > td:last-child
+  text-align right
+
+.event
+  text-align center
+
+span.detail
+  font-weight bold
+  color linkColor
+
+.participantsList
+  height 220px
+  margin 15px 0
+
+.participant
+  width 100%
+  text-align center
+
+.participantsList .viewport
+  height 240px
+  overflow hidden
+  position relative
+
+.participantsList .overview
+  width 100% 
+  list-style none 
+  position absolute 
+  left 0 top 0 
+  padding 0 
+  margin 0 
+
+.participantsList .scrollbar
+  background transparent url(bg-scrollbar-track-y.png) no-repeat 0 0 
+  position relative 
+  background-position 0 0 
+  float right 
+  width 15px
+
+.participantsList .track 
+  background transparent url(bg-scrollbar-trackend-y.png) 
+  no-repeat 0 100% 
+  height 100% 
+  width13px 
+  position relative 
+  padding 0 1px
+
+.participantsList .thumb 
+  background transparent url(bg-scrollbar-thumb-y.png) no-repeat 50% 100% 
+  height 20px 
+  width 25px 
+  cursor pointer 
+  overflow hidden 
+  position absolute 
+  top 0 
+  left -5px
+
+.participantsList .thumb .end 
+  background transparent url(bg-scrollbar-thumb-y.png) no-repeat 50% 0 
+  overflow hidden 
+  height 5px 
+  width 25px
+
+.participantsList .disable
+  display none
+
+.eventForm
+  text-align center
+.eventForm input
+  margin 10px 0
+
+.back
+  width 100%
+  text-align right
+
+.myAlert
+  position absolute
+  top 0
+  z-index 10000
+  width 100%
+  text-align center
+
+span.alert-icon
+  margin 0 10px
+
+.text-center
+  text-align center
+
+.verificationKey
+  width 50%
+  margin 40px auto
+  padding 10px 0
+  background widgetColor
+  border 1px solid widgetColorComing
+  color linkColor
+  font-weight bold
+  font-size 1.5em

@@ -36,7 +36,8 @@ var languages = {
           ENDING: "Date de fin",
           MAXPLAYERS: "Nombre de joueurs max",
           MINLEVEL: "Niveau minimal requis",
-          MAXLEVEL: "Niveau maximal requis"
+          MAXLEVEL: "Niveau maximal requis",
+          CASHPRIZE: "Récompense"
         }
       },
       MATCH: {
